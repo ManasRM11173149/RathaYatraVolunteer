@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+{% block title %}Choose category — {{ event.name }}{% endblock %}
+
+{% block extra_css %}
+.cat-card {
+  background: #fff;
+  border-radius: 10px;
+  padding: 18px;
+  box-shadow: var(--shadow);
+  border-left: 4px solid;
+  transition: var(--tr);
+  cursor: pointer;
+  text-decoration: none;
+  display: block;
+  color: var(--text);
+}
+.cat-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+.cat-name { font-size: 15px; font-weight: 700; margin-bottom: 4px; }
+.cat-meta { font-size: 11.5px; color: var(--text-muted); margin-bottom: 12px; }
+.cat-foot {
+  display: flex; justify-content: space-between; align-items: center;
+  font-size: 11.5px; color: var(--text-muted);
+}
+.cat-pct { font-weight: 700; color: var(--text); font-size: 13px; }
+{% endblock %}
+
+{% block content %}
+
+<div class="crumb">
+  <a href="{{ url_for('signup_events') }}">🙋 Events</a>
+  <span class="crumb-sep">/</span>
+  <span class="crumb-current">{{ event.name }}</span>
+</div>
+
+<div class="page-header">
+  <div class="page-title" style="color:{{ event.color }}">{{ event.name }}</div>
+  <div class="page-sub">{{ event.weekday }}, {{ event.date }} · {{ event.time }} · {{ contact.venue }}</div>
+</div>
+
+<div class="stepper">
+  <div class="step done"><span class="step-num">✓</span><span class="step-label">Choose event</span></div>
+  <div class="step-line"></div>
+  <div class="step active"><span class="step-num">2</span><span class="step-label">Choose category</span></div>
+  <div class="step-line"></div>
+  <div class="step"><span class="step-num">3</span><span class="step-label">Register for tasks</span></div>
+</div>
+
+<div class="grid-3">
+  {% for c in categories %}
+    <a href="{{ url_for('signup_tasks', event_id=event.id, cat_id=c.id) }}"
+       class="cat-card" style="border-left-color:{{ event.color }}">
+      <div class="cat-name" style="color:{{ event.dark }}">{{ c.name }}</div>
+      <div class="cat-meta">{{ c.tasks|length }} task{{ 's' if c.tasks|length != 1 else '' }}</div>
+      <div class="pbar" style="margin-bottom:8px">
+        <div class="pbar-fill" style="width:{{ c.pct }}%;background:{{ event.color }}"></div>
+      </div>
+      <div class="cat-foot">
+        <span>{{ c.filled }} / {{ c.total }} slots</span>
+        <span class="cat-pct">{{ c.pct }}%</span>
+      </div>
+    </a>
+  {% endfor %}
+</div>
+
+<div style="margin-top:16px">
+  <a href="{{ url_for('signup_events') }}" class="btn btn-secondary">← Back to events</a>
+</div>
+
+{% endblock %}

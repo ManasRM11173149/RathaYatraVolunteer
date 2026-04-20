@@ -1,0 +1,175 @@
+{% extends "base.html" %}
+{% block title %}Admin Dashboard — Ratha Yatra 2026{% endblock %}
+
+{% block extra_css %}
+.section-header {
+  font-size: 15px; font-weight: 700;
+  margin: 22px 0 10px;
+  padding-bottom: 6px;
+  border-bottom: 2px solid var(--root-bg);
+  display: flex; align-items: center; gap: 8px;
+}
+.admin-badge-row {
+  display: flex; justify-content: space-between; align-items: center;
+  background: linear-gradient(135deg, #1e3a5f, #534AB7);
+  color: #fff;
+  padding: 14px 18px;
+  border-radius: 10px;
+  margin-bottom: 18px;
+  flex-wrap: wrap; gap: 10px;
+}
+.admin-badge-title { font-size: 15px; font-weight: 700; }
+.admin-badge-sub { font-size: 10.5px; opacity: 0.85; }
+{% endblock %}
+
+{% block content %}
+
+<div class="admin-badge-row">
+  <div>
+    <div class="admin-badge-title">🔒 Admin Dashboard</div>
+    <div class="admin-badge-sub">Signups · Slot states · Task fills · Export</div>
+  </div>
+  <div style="display:flex;gap:8px;flex-wrap:wrap">
+    <a href="{{ url_for('admin_export_csv') }}" class="btn btn-success" style="padding:6px 12px;font-size:11px">
+      📥 Export CSV
+    </a>
+    <a href="{{ url_for('admin_logout') }}" class="btn btn-secondary" style="padding:6px 12px;font-size:11px">
+      Logout
+    </a>
+  </div>
+</div>
+
+<!-- Overview stats -->
+<div class="grid-4">
+  <div class="stat-tile" style="border-left-color:var(--green)">
+    <div class="stat-tile-label">Total Signups</div>
+    <div class="stat-tile-value">{{ total_signups }}</div>
+  </div>
+  <div class="stat-tile" style="border-left-color:var(--orange)">
+    <div class="stat-tile-label">Total Slots</div>
+    <div class="stat-tile-value">{{ total_slots }}</div>
+  </div>
+  <div class="stat-tile" style="border-left-color:var(--blue)">
+    <div class="stat-tile-label">% Filled</div>
+    <div class="stat-tile-value">{{ ((total_filled/total_slots*100)|round(0)|int) if total_slots else 0 }}%</div>
+  </div>
+  <div class="stat-tile" style="border-left-color:#D4537E">
+    <div class="stat-tile-label">Events</div>
+    <div class="stat-tile-value">{{ events|length }}</div>
+  </div>
+</div>
+
+<!-- Per-event summary -->
+<div class="section-header">📅 Event Fill Summary</div>
+<div class="card">
+  {% for e in events %}
+    {% set bar_color = '#639922' if e.stats.urgency == 'filling' else ('#BA7517' if e.stats.urgency == 'almost_full' else '#A32D2D') %}
+    <div style="margin-bottom:10px">
+      <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px">
+        <span><strong>{{ e.name }}</strong> <span style="color:var(--text-muted);font-size:11px">· {{ e.weekday }}, {{ e.date }}</span></span>
+        <span style="font-family:'DM Mono',monospace;color:var(--text-muted);font-size:11px">
+          {{ e.stats.filled }} / {{ e.stats.total }} · {{ e.stats.pct }}% · {{ e.stats.task_count }} tasks
+        </span>
+      </div>
+      <div class="pbar">
+        <div class="pbar-fill" style="width:{{ e.stats.pct }}%;background:{{ bar_color }}"></div>
+      </div>
+    </div>
+  {% endfor %}
+</div>
+
+<!-- All signups with status management -->
+<div class="section-header">👥 All Signups ({{ signups|length }})</div>
+<div class="card">
+  {% if signups %}
+    <div class="table-wrap">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Volunteer</th>
+            <th>Contact</th>
+            <th>Event / Task</th>
+            <th>Status</th>
+            <th>Registered</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for s in signups|reverse %}
+            {% set ev = events|selectattr('id','equalto',s.event_id)|first %}
+            <tr>
+              <td>
+                <div style="display:flex;align-items:center;gap:8px">
+                  <span style="width:28px;height:24px;background:var(--green-light);color:var(--green-dark);border-radius:5px;font-size:10px;font-weight:700;display:inline-flex;align-items:center;justify-content:center">
+                    {{ s.initials }}
+                  </span>
+                  <strong>{{ s.first_name }} {{ s.last_name }}</strong>
+                </div>
+              </td>
+              <td>
+                <div style="font-size:10.5px">{{ s.email }}</div>
+                <div style="font-size:10.5px;color:var(--text-muted)">{{ s.phone }}</div>
+              </td>
+              <td style="font-size:11px">
+                {% if ev %}
+                  <span style="background:{{ ev.light }};color:{{ ev.dark }};padding:2px 8px;border-radius:10px;font-size:10px;font-weight:600">
+                    {{ s.event_name }}
+                  </span>
+                {% endif %}
+                <div style="margin-top:3px">{{ s.task_name }}</div>
+                <div style="color:var(--text-muted);font-size:10px">{{ s.category_name }} · {{ s.task_time }}</div>
+              </td>
+              <td>
+                {% if s.status == 'filled' %}
+                  <span style="background:var(--green-bg);color:var(--green);padding:2px 8px;border-radius:10px;font-size:10px;font-weight:600">✓ Filled</span>
+                {% elif s.status == 'pending' %}
+                  <span style="background:var(--orange-bg);color:var(--orange-dark);padding:2px 8px;border-radius:10px;font-size:10px;font-weight:600">⧖ Pending</span>
+                {% elif s.status == 'withdrawn' %}
+                  <span style="background:var(--red-bg);color:var(--red-dark);padding:2px 8px;border-radius:10px;font-size:10px;font-weight:600">✗ Withdrawn</span>
+                {% endif %}
+              </td>
+              <td style="font-family:'DM Mono',monospace;font-size:10px;color:var(--text-muted)">
+                {{ s.timestamp }}
+              </td>
+              <td>
+                <div style="display:flex;gap:4px;flex-wrap:wrap">
+                  {% for new_status in ['filled','pending','withdrawn'] %}
+                    {% if s.status != new_status %}
+                      <form method="POST" action="{{ url_for('admin_change_status', sid=s.id, new_status=new_status) }}" style="display:inline">
+                        <button type="submit" class="btn btn-secondary" style="padding:3px 7px;font-size:9.5px;text-transform:capitalize">
+                          → {{ new_status }}
+                        </button>
+                      </form>
+                    {% endif %}
+                  {% endfor %}
+                  <form method="POST" action="{{ url_for('admin_delete', sid=s.id) }}"
+                        onsubmit="return confirm('Delete {{ s.first_name }} {{ s.last_name }}?')" style="display:inline">
+                    <button type="submit" class="btn btn-danger" style="padding:3px 7px;font-size:9.5px">
+                      Delete
+                    </button>
+                  </form>
+                </div>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <div class="alert alert-info">No signups yet.</div>
+  {% endif %}
+</div>
+
+<!-- Contact info -->
+<div class="section-header">📞 Venue & Contact</div>
+<div class="card" style="font-size:12.5px;line-height:1.8">
+  <strong>Venue:</strong> {{ contact.venue }} · {{ contact.address }}<br>
+  <strong>WhatsApp:</strong>
+  <a href="{{ contact.whatsapp_link }}" target="_blank" style="color:var(--root-bg);font-weight:600">
+    {{ contact.whatsapp_name }}
+  </a><br>
+  <strong>Email:</strong>
+  <a href="mailto:{{ contact.email }}" style="color:var(--root-bg);font-weight:600">{{ contact.email }}</a>
+</div>
+
+{% endblock %}

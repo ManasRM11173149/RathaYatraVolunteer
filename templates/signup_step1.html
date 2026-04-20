@@ -1,0 +1,168 @@
+{% extends "base.html" %}
+{% block title %}Sign up to volunteer — Ratha Yatra 2026{% endblock %}
+
+{% block extra_css %}
+.event-card {
+  background: #fff;
+  border-radius: 10px;
+  padding: 16px;
+  box-shadow: var(--shadow);
+  border: 1.5px solid transparent;
+  transition: var(--tr);
+  cursor: pointer;
+  text-decoration: none;
+  display: block;
+  color: var(--text);
+}
+.event-card:hover {
+  border-color: var(--root-bg);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+.ec-name {
+  font-size: 15px; font-weight: 700;
+  color: var(--text);
+  margin-bottom: 3px;
+}
+.ec-date {
+  font-size: 12px; color: var(--text-muted);
+  margin-bottom: 14px;
+}
+.ec-bar {
+  height: 6px; background: #f1f5f9;
+  border-radius: 3px; overflow: hidden;
+  margin-bottom: 10px;
+}
+.ec-bar-fill { height: 100%; border-radius: 3px; transition: width 0.6s ease; }
+.ec-foot {
+  display: flex; justify-content: space-between; align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.ec-badge {
+  font-size: 10.5px;
+  font-weight: 600;
+  padding: 3px 10px;
+  border-radius: 10px;
+  line-height: 1.3;
+  white-space: nowrap;
+}
+.badge-filling { background: var(--green-bg); color: var(--green); }
+.badge-amber   { background: var(--orange-bg); color: var(--orange-dark); }
+.badge-needs   { background: var(--red-bg); color: var(--red); }
+.badge-full    { background: var(--green-bg); color: var(--green); }
+.ec-tasks {
+  font-size: 10.5px; color: var(--text-light);
+  white-space: nowrap;
+}
+
+@media (max-width: 768px) {
+  .event-card {
+    padding: 14px;
+  }
+  
+  .ec-name {
+    font-size: 14px;
+  }
+  
+  .ec-date {
+    font-size: 11px;
+    margin-bottom: 12px;
+  }
+  
+  .ec-badge {
+    font-size: 9.5px;
+    padding: 4px 8px;
+  }
+  
+  .ec-tasks {
+    font-size: 10px;
+  }
+}
+
+@media (max-width: 480px) {
+  .event-card {
+    padding: 12px;
+    border-radius: 8px;
+  }
+  
+  .ec-name {
+    font-size: 13px;
+    margin-bottom: 2px;
+  }
+  
+  .ec-date {
+    font-size: 10px;
+    margin-bottom: 10px;
+  }
+  
+  .ec-bar {
+    height: 5px;
+    margin-bottom: 8px;
+  }
+  
+  .ec-foot {
+    gap: 6px;
+  }
+  
+  .ec-badge {
+    font-size: 9px;
+    padding: 3px 6px;
+  }
+  
+  .ec-tasks {
+    font-size: 9px;
+  }
+}
+{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+  <div class="page-title">🙋 Sign up to volunteer</div>
+  <div class="page-sub">
+    Follow the steps below — choose your event, then category, then individual tasks.
+  </div>
+</div>
+
+<div class="stepper">
+  <div class="step active"><span class="step-num">1</span><span class="step-label">Choose event</span></div>
+  <div class="step-line"></div>
+  <div class="step"><span class="step-num">2</span><span class="step-label">Choose category</span></div>
+  <div class="step-line"></div>
+  <div class="step"><span class="step-num">3</span><span class="step-label">Register for tasks</span></div>
+</div>
+
+<div class="grid-3">
+  {% for e in events %}
+    {% set urgency = e.stats.urgency %}
+    {% set bar_color = '#639922' if urgency == 'filling' else ('#BA7517' if urgency == 'almost_full' else '#A32D2D') %}
+    {% set badge_class = 'badge-filling' if urgency == 'filling' else ('badge-amber' if urgency == 'almost_full' else 'badge-needs') %}
+    {% set badge_text = (e.stats.pct|string) + '% filled' if urgency != 'needs_help' else (e.stats.pct|string) + '% — needs help' %}
+    {% if e.stats.pct == 100 %}
+      {% set badge_class = 'badge-full' %}
+      {% set badge_text = '100% filled' %}
+      {% set bar_color = '#639922' %}
+    {% endif %}
+    <a href="{{ url_for('signup_categories', event_id=e.id) }}" class="event-card">
+      <div class="ec-name">{{ e.name }}</div>
+      <div class="ec-date">{{ e.weekday }}, {{ e.date }}</div>
+      <div class="ec-bar">
+        <div class="ec-bar-fill" style="width:{{ e.stats.pct }}%;background:{{ bar_color }}"></div>
+      </div>
+      <div class="ec-foot">
+        <span class="ec-badge {{ badge_class }}">{{ badge_text }}</span>
+        <span class="ec-tasks">{{ e.stats.task_count }} tasks</span>
+      </div>
+    </a>
+  {% endfor %}
+</div>
+
+<div class="card" style="margin-top:18px">
+  <div style="font-size:12.5px;line-height:1.7;color:var(--text-muted)">
+    📍 <strong>{{ contact.venue }}</strong> · {{ contact.address }}<br>
+    💬 WhatsApp: <a href="{{ contact.whatsapp_link }}" target="_blank" style="color:var(--root-bg);text-decoration:none">{{ contact.whatsapp_name }}</a>
+  </div>
+</div>
+
+{% endblock %}

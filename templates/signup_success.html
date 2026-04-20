@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block title %}Registered — Ratha Yatra 2026{% endblock %}
+
+{% block content %}
+
+<div class="card" style="max-width:560px;margin:30px auto;text-align:center">
+  <div style="font-size:48px;margin-bottom:8px">✅</div>
+  <div style="font-size:20px;font-weight:700;color:var(--green);margin-bottom:4px">
+    You're signed up!
+  </div>
+  <div style="font-size:13px;color:var(--text-muted);margin-bottom:18px">
+    Jai Jagannath, <strong>{{ row.first_name }} {{ row.last_name }}</strong>!<br>
+    Confirmation sent to {{ row.email }} and {{ row.phone }}.
+  </div>
+
+  <div style="display:flex;align-items:center;gap:14px;background:{{ event.light }};border-radius:8px;padding:14px;text-align:left;border-left:4px solid {{ event.color }}">
+    <div style="width:52px;height:46px;background:var(--green-light);color:var(--green-dark);border-radius:7px;font-size:18px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+      {{ row.initials }}
+    </div>
+    <div style="font-size:12.5px;line-height:1.7;color:{{ event.dark }}">
+      <strong>{{ task.name }}</strong><br>
+      {{ category.name }} · {{ event.name }}<br>
+      📅 {{ event.weekday }}, {{ event.date }}<br>
+      🕐 {{ task.time }}<br>
+      📍 {{ contact.venue }}
+    </div>
+  </div>
+
+  <div style="margin-top:18px;font-size:11.5px;color:var(--blue-dark);background:var(--blue-bg);border-radius:7px;padding:12px;text-align:left;line-height:1.6">
+    <strong>What's next?</strong><br>
+    • Email and SMS confirmations sent.<br>
+    • Join WhatsApp:
+    <a href="{{ contact.whatsapp_link }}" target="_blank" style="color:var(--blue-dark);font-weight:600">
+      {{ contact.whatsapp_name }}
+    </a><br>
+    • A coordinator will reach out before {{ event.date }}.
+  </div>
+
+  <div style="display:flex;gap:10px;margin-top:20px;justify-content:center;flex-wrap:wrap">
+    <a href="{{ url_for('signup_tasks', event_id=event.id, cat_id=category.id) }}"
+       class="btn btn-secondary">Sign up for another task</a>
+    <a href="{{ url_for('signup_events') }}" class="btn">← Back to events</a>
+  </div>
+</div>
+
+{% endblock %}

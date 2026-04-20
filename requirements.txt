@@ -1,0 +1,3 @@
+Flask==3.0.0
+# Optional — only if enabling real SMS via Twilio:
+# twilio>=8.0.0

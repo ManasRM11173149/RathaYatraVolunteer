@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{% block title %}Ratha Yatra 2026{% endblock %}</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --root-bg: #1e3a5f;
+  --body-bg: #f0f4f8;
+  --card-bg: #ffffff;
+  --text: #1a2332;
+  --text-muted: #5a6a7a;
+  --text-light: #8b98a9;
+  --border: #e2e8f0;
+  --shadow: 0 2px 8px rgba(0,0,0,0.08);
+  --shadow-md: 0 4px 16px rgba(0,0,0,0.12);
+  --green: #1D9E75;
+  --green-bg: #f0fdf4;
+  --green-light: #C0DD97;
+  --green-dark: #173404;
+  --orange: #BA7517;
+  --orange-bg: #FAEEDA;
+  --orange-dark: #633806;
+  --red: #A32D2D;
+  --red-bg: #FCEBEB;
+  --red-light: #F7C1C1;
+  --red-dark: #501313;
+  --blue: #378ADD;
+  --blue-bg: #E6F1FB;
+  --blue-dark: #0C447C;
+  --amber: #FAC775;
+  --amber-dark: #412402;
+  --tr: all 0.2s ease;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--body-bg);
+  color: var(--text);
+  min-height: 100vh;
+  line-height: 1.5;
+}
+
+/* Top bar */
+.topbar {
+  position: sticky; top: 0; z-index: 200;
+  background: var(--root-bg);
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 10px 20px; gap: 12px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.22);
+}
+.topbar-brand { display: flex; flex-direction: column; }
+.topbar-title { font-size: 15px; font-weight: 700; color: #fff; }
+.topbar-sub { font-size: 10px; color: rgba(255,255,255,0.55); margin-top: 1px; }
+.admin-indicator {
+  font-size: 10px; background: #D4537E; color: #fff;
+  padding: 3px 8px; border-radius: 4px; font-weight: 600;
+}
+
+/* 3-tab nav */
+.tabs {
+  background: #fff;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  overflow-x: auto;
+  position: sticky; top: 58px; z-index: 190;
+  scrollbar-width: thin;
+}
+.tabs::-webkit-scrollbar { height: 3px; }
+.tabs::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+.tab {
+  padding: 12px 18px;
+  font-size: 13px; font-weight: 500;
+  color: var(--text-muted);
+  text-decoration: none;
+  white-space: nowrap;
+  border-bottom: 2.5px solid transparent;
+  transition: var(--tr);
+  display: flex; align-items: center; gap: 6px;
+}
+.tab:hover { color: var(--text); background: #f8fafc; }
+.tab.active {
+  color: var(--root-bg);
+  border-bottom-color: var(--root-bg);
+  font-weight: 600;
+}
+.tab.admin-tab {
+  margin-left: auto;
+  background: linear-gradient(135deg, #D4537E, #534AB7);
+  color: #fff !important;
+  border-bottom: none;
+}
+.tab.admin-tab.active { filter: brightness(1.1); }
+
+/* Layout */
+.content {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 24px 20px 60px;
+}
+.page-header { margin-bottom: 20px; }
+.page-title {
+  font-size: 22px; font-weight: 700; color: var(--text);
+  margin-bottom: 4px;
+}
+.page-sub { font-size: 13px; color: var(--text-muted); }
+
+/* Breadcrumb */
+.crumb {
+  font-size: 11.5px;
+  color: var(--text-muted);
+  margin-bottom: 10px;
+  display: flex; align-items: center; gap: 6px; flex-wrap: wrap;
+}
+.crumb a { color: var(--text-muted); text-decoration: none; }
+.crumb a:hover { color: var(--text); text-decoration: underline; }
+.crumb-sep { color: var(--text-light); }
+.crumb-current { color: var(--text); font-weight: 500; }
+
+/* Cards */
+.card {
+  background: var(--card-bg);
+  border-radius: 10px;
+  padding: 18px;
+  box-shadow: var(--shadow);
+  margin-bottom: 14px;
+}
+
+/* Grids */
+.grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; }
+.grid-4 { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 12px; }
+
+/* Stat tiles */
+.stat-tile {
+  background: #fff;
+  border-radius: 10px;
+  padding: 16px;
+  box-shadow: var(--shadow);
+  border-left: 4px solid var(--root-bg);
+}
+.stat-tile-label {
+  font-size: 11px; color: var(--text-muted);
+  text-transform: uppercase; letter-spacing: 0.5px;
+  font-weight: 600;
+}
+.stat-tile-value {
+  font-size: 28px; font-weight: 700; color: var(--text);
+  margin-top: 4px; line-height: 1;
+}
+.stat-tile-sub { font-size: 11px; color: var(--text-muted); margin-top: 4px; }
+
+/* Forms */
+.form-group { margin-bottom: 14px; }
+.form-label {
+  display: block;
+  font-size: 12px; font-weight: 600;
+  color: var(--text);
+  margin-bottom: 6px;
+}
+.form-label .req { color: var(--red); margin-left: 2px; }
+.form-input {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1.5px solid var(--border);
+  border-radius: 7px;
+  font-family: inherit;
+  font-size: 13px;
+  background: #fff;
+  color: var(--text);
+  transition: var(--tr);
+}
+.form-input:focus {
+  outline: none;
+  border-color: var(--root-bg);
+  box-shadow: 0 0 0 3px rgba(30,58,95,0.12);
+}
+
+/* Buttons */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+  padding: 10px 18px;
+  background: var(--root-bg);
+  color: #fff;
+  border: none;
+  border-radius: 7px;
+  font-family: inherit;
+  font-size: 13px; font-weight: 600;
+  cursor: pointer;
+  transition: var(--tr);
+  text-decoration: none;
+}
+.btn:hover { background: #162a44; transform: translateY(-1px); box-shadow: var(--shadow-md); }
+.btn-secondary { background: #fff; color: var(--text); border: 1.5px solid var(--border); }
+.btn-secondary:hover { background: #f8fafc; }
+.btn-danger { background: var(--red); }
+.btn-danger:hover { background: #842424; }
+.btn-success { background: var(--green); }
+.btn-success:hover { background: #157a5a; }
+.btn-block { width: 100%; }
+
+/* Alerts */
+.alert {
+  padding: 12px 16px;
+  border-radius: 7px;
+  margin-bottom: 14px;
+  font-size: 13px;
+}
+.alert-success { background: var(--green-bg); color: #085041; border-left: 3px solid var(--green); }
+.alert-error { background: var(--red-bg); color: #72243E; border-left: 3px solid var(--red); }
+.alert-info { background: var(--blue-bg); color: var(--blue-dark); border-left: 3px solid var(--blue); }
+
+/* Tables */
+.table-wrap { overflow-x: auto; border-radius: 8px; border: 1px solid var(--border); background: #fff; }
+.table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+.table th {
+  background: #f8fafc; text-align: left;
+  padding: 10px 12px; font-weight: 600;
+  font-size: 11px; color: var(--text-muted);
+  text-transform: uppercase; letter-spacing: 0.3px;
+  border-bottom: 1px solid var(--border);
+}
+.table td {
+  padding: 10px 12px; border-bottom: 1px solid var(--border);
+  vertical-align: top;
+}
+.table tr:last-child td { border-bottom: none; }
+.table tr:hover { background: #f8fafc; }
+
+/* Progress bar */
+.pbar { height: 6px; border-radius: 3px; background: #f1f5f9; overflow: hidden; }
+.pbar-fill { height: 100%; border-radius: 3px; background: var(--root-bg); transition: width 0.6s ease; }
+
+/* Stepper (for signup flow) */
+.stepper {
+  display: flex; align-items: center; gap: 12px;
+  margin-bottom: 22px;
+  font-size: 12.5px;
+}
+.step { display: flex; align-items: center; gap: 7px; }
+.step-num {
+  width: 22px; height: 22px;
+  border-radius: 50%;
+  background: var(--border);
+  color: var(--text-muted);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px; font-weight: 700;
+  flex-shrink: 0;
+}
+.step.active .step-num { background: var(--root-bg); color: #fff; }
+.step.done .step-num { background: var(--green); color: #fff; }
+.step.active .step-label { color: var(--text); font-weight: 600; }
+.step-label { color: var(--text-muted); }
+.step-line { flex: 1; height: 1.5px; background: var(--border); }
+
+/* Legend */
+.legend {
+  display: flex; gap: 14px; flex-wrap: wrap;
+  font-size: 11px; color: var(--text-muted);
+  margin-bottom: 12px;
+}
+.legend-dot {
+  width: 12px; height: 12px; border-radius: 3px;
+  display: inline-block; margin-right: 4px;
+  vertical-align: middle;
+}
+
+/* Slot badges */
+.slot {
+  width: 30px; height: 26px;
+  border-radius: 5px;
+  font-size: 10px;
+  font-weight: 700;
+  display: inline-flex; align-items: center; justify-content: center;
+  transition: var(--tr);
+  text-decoration: none;
+}
+.slot-filled {
+  background: var(--green-light); color: var(--green-dark);
+}
+.slot-pending {
+  background: var(--amber); color: var(--amber-dark);
+}
+.slot-withdrawn {
+  background: var(--red-light); color: var(--red-dark);
+}
+.slot-open {
+  background: #fff;
+  color: var(--text-light);
+  border: 1.5px dashed var(--border);
+  font-size: 14px;
+  cursor: pointer;
+}
+.slot-open:hover {
+  border-color: var(--root-bg); color: var(--root-bg);
+  background: var(--blue-bg);
+  transform: scale(1.06);
+}
+
+/* Footer */
+.footer {
+  text-align: center;
+  padding: 18px;
+  font-size: 11px;
+  color: var(--text-muted);
+  border-top: 1px solid var(--border);
+  margin-top: 26px;
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+  :root {
+    font-size: 15px;
+  }
+  
+  .topbar {
+    padding: 12px 16px;
+    gap: 8px;
+  }
+  
+  .topbar-title { font-size: 14px; }
+  .topbar-sub { font-size: 10px; }
+  .topbar-brand { gap: 2px; }
+  
+  .tabs {
+    top: 54px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  .tab { 
+    padding: 12px 14px; 
+    font-size: 12px; 
+    min-width: max-content;
+  }
+  
+  .tab.admin-tab {
+    padding: 10px 12px;
+    font-size: 11px;
+  }
+  
+  .content { 
+    padding: 16px 12px 60px;
+    max-width: 100%;
+  }
+  
+  .page-title { 
+    font-size: 20px; 
+    margin-bottom: 6px;
+  }
+  
+  .page-sub {
+    font-size: 13px;
+    line-height: 1.4;
+  }
+  
+  .page-header { margin-bottom: 16px; }
+  
+  .grid-3 { 
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); 
+    gap: 12px; 
+  }
+  
+  .grid-4 { 
+    grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); 
+    gap: 10px; 
+  }
+  
+  .card { 
+    padding: 14px; 
+    margin-bottom: 12px;
+    border-radius: 8px;
+  }
+  
+  .stat-tile {
+    padding: 14px;
+    border-radius: 8px;
+  }
+  
+  .stat-tile-value { 
+    font-size: 24px; 
+  }
+  
+  .stat-tile-label { font-size: 10px; }
+  .stat-tile-sub { font-size: 11px; }
+  
+  .form-group { margin-bottom: 12px; }
+  
+  .form-label { 
+    font-size: 12px;
+    margin-bottom: 5px;
+  }
+  
+  .form-input {
+    padding: 12px;
+    font-size: 16px;
+    border-radius: 6px;
+  }
+  
+  .btn {
+    padding: 12px 16px;
+    font-size: 13px;
+    border-radius: 6px;
+    min-height: 44px;
+    min-width: 44px;
+  }
+  
+  .btn-block { width: 100%; }
+  
+  .alert {
+    padding: 12px 14px;
+    font-size: 13px;
+    border-radius: 6px;
+  }
+  
+  .stepper { 
+    gap: 6px; 
+    margin-bottom: 18px;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 4px;
+  }
+  
+  .step { 
+    display: flex; 
+    align-items: center; 
+    gap: 5px;
+    white-space: nowrap;
+  }
+  
+  .step-label { 
+    display: none;
+    font-size: 11px;
+  }
+  
+  .step.active .step-label { 
+    display: inline; 
+  }
+  
+  .step-num {
+    width: 20px;
+    height: 20px;
+    font-size: 10px;
+  }
+  
+  .step-line {
+    flex: 0 0 8px;
+    min-width: 8px;
+  }
+  
+  .crumb {
+    font-size: 11px;
+    margin-bottom: 8px;
+  }
+  
+  .legend {
+    gap: 10px;
+    font-size: 11px;
+  }
+  
+  .slot {
+    width: 32px;
+    height: 28px;
+    font-size: 11px;
+    border-radius: 4px;
+  }
+  
+  .table {
+    font-size: 12px;
+  }
+  
+  .table th {
+    padding: 8px 10px;
+    font-size: 10px;
+  }
+  
+  .table td {
+    padding: 8px 10px;
+  }
+  
+  .footer {
+    padding: 16px 12px;
+    font-size: 11px;
+  }
+}
+
+@media (max-width: 480px) {
+  .topbar {
+    padding: 10px 12px;
+    flex-direction: column;
+    gap: 6px;
+  }
+  
+  .topbar-brand {
+    width: 100%;
+  }
+  
+  .topbar-title { 
+    font-size: 13px; 
+  }
+  
+  .topbar-sub { 
+    font-size: 9px; 
+  }
+  
+  .admin-indicator {
+    font-size: 9px;
+    padding: 2px 6px;
+  }
+  
+  .tabs {
+    top: 78px;
+  }
+  
+  .tab {
+    padding: 10px 10px;
+    font-size: 11px;
+  }
+  
+  .content {
+    padding: 12px 10px 50px;
+  }
+  
+  .page-title {
+    font-size: 18px;
+  }
+  
+  .page-sub {
+    font-size: 12px;
+  }
+  
+  .grid-3 {
+    grid-template-columns: 1fr;
+  }
+  
+  .grid-4 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .card {
+    padding: 12px;
+  }
+  
+  .form-input {
+    padding: 14px;
+    font-size: 16px;
+  }
+  
+  .btn {
+    padding: 14px;
+    font-size: 14px;
+    width: 100%;
+  }
+  
+  .btn-block {
+    display: block;
+  }
+  
+  .alert {
+    padding: 10px 12px;
+    font-size: 12px;
+  }
+  
+  .stepper {
+    gap: 4px;
+    margin-bottom: 14px;
+  }
+  
+  .step-line {
+    flex: 0 0 6px;
+  }
+  
+  .table-wrap {
+    border: none;
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+  }
+  
+  .table {
+    font-size: 11px;
+  }
+  
+  .table th {
+    padding: 6px 8px;
+    font-size: 9px;
+  }
+  
+  .table td {
+    padding: 6px 8px;
+  }
+}
+
+@media (max-width: 360px) {
+  .page-title {
+    font-size: 16px;
+  }
+  
+  .tab {
+    padding: 8px 8px;
+    font-size: 10px;
+  }
+  
+  .form-input,
+  .btn {
+    font-size: 16px;
+  }
+}
+
+{% block extra_css %}{% endblock %}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-brand">
+    <div class="topbar-title">🕉️ Ratha Yatra 2026</div>
+    <div class="topbar-sub">Volunteer Portal · Austin Hindu Temple</div>
+  </div>
+  <div>
+    {% if session.admin_logged_in %}
+      <span class="admin-indicator">ADMIN</span>
+      <a href="{{ url_for('admin_logout') }}" style="color:#fff;font-size:11px;text-decoration:none;opacity:0.85;margin-left:6px;">Logout</a>
+    {% endif %}
+  </div>
+</div>
+
+<nav class="tabs">
+  <a href="{{ url_for('signup_events') }}" class="tab {% if active=='signup' %}active{% endif %}">
+    🙋 Volunteer Signup
+  </a>
+  <a href="{{ url_for('statistics') }}" class="tab {% if active=='statistics' %}active{% endif %}">
+    📊 Volunteer Statistics
+  </a>
+  <a href="{{ url_for('admin_dashboard') if session.admin_logged_in else url_for('admin_login') }}"
+     class="tab admin-tab {% if active=='admin' %}active{% endif %}">
+    🔒 Admin Dashboard
+  </a>
+</nav>
+
+<div class="content">
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      {% for category, message in messages %}
+        <div class="alert alert-{{ category }}">{{ message }}</div>
+      {% endfor %}
+    {% endif %}
+  {% endwith %}
+
+  {% block content %}{% endblock %}
+
+  <div class="footer">
+    Ratha Yatra 2026 · {{ contact.venue if contact else 'Austin Hindu Temple' }} · Jai Jagannath 🚩
+  </div>
+</div>
+
+{% block extra_js %}{% endblock %}
+</body>
+</html>

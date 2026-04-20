@@ -1,0 +1,202 @@
+{% extends "base.html" %}
+{% block title %}{{ category.name }} — {{ event.name }}{% endblock %}
+
+{% block extra_css %}
+.task-row {
+  display: grid;
+  grid-template-columns: minmax(160px, 1.2fr) 2fr minmax(80px, auto);
+  gap: 14px;
+  align-items: center;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--border);
+}
+.task-row:last-child { border-bottom: none; }
+.task-info { min-width: 0; }
+.task-name { font-size: 13.5px; font-weight: 600; color: var(--text); margin-bottom: 2px; }
+.task-meta { font-size: 11px; color: var(--text-muted); }
+.task-slots {
+  display: flex; flex-wrap: wrap; gap: 5px;
+}
+.task-stats {
+  text-align: right;
+  font-size: 11px;
+  color: var(--text-muted);
+}
+.task-stats-pct {
+  font-size: 14px; font-weight: 700;
+  color: var(--text);
+}
+.task-stats-pct.low { color: var(--red); }
+.task-stats-pct.mid { color: var(--orange); }
+.task-stats-pct.high { color: var(--green); }
+
+.event-banner {
+  display: flex; align-items: center; gap: 10px;
+  padding: 12px 14px;
+  border-radius: 8px;
+  margin-bottom: 14px;
+  border-left: 5px solid;
+}
+.event-dot {
+  width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0;
+}
+.event-banner-name { font-size: 14px; font-weight: 700; }
+.event-banner-meta { font-size: 11.5px; color: var(--text-muted); }
+.event-banner-right { margin-left: auto; text-align: right; font-size: 11.5px; font-weight: 600; }
+
+@media (max-width: 768px) {
+  .task-row { 
+    grid-template-columns: 1fr; 
+    gap: 10px;
+    padding: 12px 0;
+  }
+  
+  .task-stats { 
+    text-align: left; 
+    margin-top: 6px;
+  }
+  
+  .event-banner {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  
+  .event-banner-right {
+    margin-left: 0;
+    width: 100%;
+    text-align: left;
+  }
+}
+
+@media (max-width: 480px) {
+  .task-row {
+    gap: 8px;
+    padding: 10px 0;
+  }
+  
+  .task-name { 
+    font-size: 12.5px; 
+  }
+  
+  .task-meta { 
+    font-size: 10px; 
+  }
+  
+  .task-slots {
+    gap: 4px;
+  }
+  
+  .task-stats-pct {
+    font-size: 13px;
+  }
+  
+  .task-stats {
+    font-size: 10px;
+  }
+  
+  .event-banner {
+    padding: 10px 12px;
+    gap: 8px;
+  }
+  
+  .event-banner-name {
+    font-size: 13px;
+  }
+  
+  .event-banner-meta {
+    font-size: 10px;
+  }
+  
+  .event-banner-right {
+    font-size: 10px;
+  }
+}
+{% endblock %}
+
+{% block content %}
+
+<div class="crumb">
+  <a href="{{ url_for('signup_events') }}">🙋 Events</a>
+  <span class="crumb-sep">/</span>
+  <a href="{{ url_for('signup_categories', event_id=event.id) }}">{{ event.name }}</a>
+  <span class="crumb-sep">/</span>
+  <span class="crumb-current">{{ category.name }}</span>
+</div>
+
+<div class="page-header">
+  <div class="page-title">Volunteer slot view</div>
+  <div class="page-sub">
+    Green = filled · White = open (click to sign up) · Red = withdrawn · Amber = pending
+  </div>
+</div>
+
+<div class="stepper">
+  <div class="step done"><span class="step-num">✓</span><span class="step-label">Choose event</span></div>
+  <div class="step-line"></div>
+  <div class="step done"><span class="step-num">✓</span><span class="step-label">Choose category</span></div>
+  <div class="step-line"></div>
+  <div class="step active"><span class="step-num">3</span><span class="step-label">Register for tasks</span></div>
+</div>
+
+<div class="legend">
+  <span><span class="legend-dot" style="background:var(--green-light)"></span>Filled</span>
+  <span><span class="legend-dot" style="background:#fff;border:1.5px dashed var(--border)"></span>Open — click to register</span>
+  <span><span class="legend-dot" style="background:var(--red-light)"></span>Withdrawn</span>
+  <span><span class="legend-dot" style="background:var(--amber)"></span>Pending confirmation</span>
+</div>
+
+<div class="card">
+  <div class="event-banner" style="background:{{ event.light }};border-left-color:{{ event.color }}">
+    <span class="event-dot" style="background:{{ event.color }}"></span>
+    <div>
+      <div class="event-banner-name" style="color:{{ event.dark }}">{{ event.name }}</div>
+      <div class="event-banner-meta">{{ event.weekday }}, {{ event.date }} · {{ contact.venue }}</div>
+    </div>
+    <div class="event-banner-right">
+      <span style="color:{% if event.stats.urgency == 'needs_help' %}var(--red){% else %}var(--text){% endif %}">
+        {{ event.stats.pct }}% filled · {{ event.stats.open }} open
+      </span>
+    </div>
+  </div>
+
+  <div style="font-size:10.5px;color:var(--text-light);letter-spacing:1px;font-weight:600;margin:12px 0 4px;text-transform:uppercase">
+    {{ category.name }}
+  </div>
+
+  {% for t in tasks %}
+    <div class="task-row">
+      <div class="task-info">
+        <div class="task-name">{{ t.name }}</div>
+        <div class="task-meta">{{ t.time }}{% if t.tag %} · {{ t.tag }}{% endif %}</div>
+      </div>
+
+      <div class="task-slots">
+        {% for slot in t.slots %}
+          {% if slot.status == 'filled' %}
+            <span class="slot slot-filled" title="{{ slot.name }}">{{ slot.initials }}</span>
+          {% elif slot.status == 'pending' %}
+            <span class="slot slot-pending" title="{{ slot.name }} (pending)">{{ slot.initials }}</span>
+          {% elif slot.status == 'withdrawn' %}
+            <span class="slot slot-withdrawn" title="{{ slot.name }} (withdrawn)">{{ slot.initials }}</span>
+          {% else %}
+            <a class="slot slot-open"
+               href="{{ url_for('signup_form', event_id=event.id, cat_id=category.id, task_id=t.id) }}"
+               title="Sign up for this slot">+</a>
+          {% endif %}
+        {% endfor %}
+      </div>
+
+      {% set pct_class = 'high' if t.pct >= 80 else ('mid' if t.pct >= 50 else 'low') %}
+      <div class="task-stats">
+        <div class="task-stats-pct {{ pct_class }}">{% if t.open == 0 %}Full{% else %}{{ t.pct }}%{% endif %}</div>
+        <div>{{ t.filled }} filled{% if t.pending %} · {{ t.pending }} pending{% endif %}{% if t.open %} · {{ t.open }} open{% endif %} · {{ t.total }} total</div>
+      </div>
+    </div>
+  {% endfor %}
+</div>
+
+<div style="margin-top:16px">
+  <a href="{{ url_for('signup_categories', event_id=event.id) }}" class="btn btn-secondary">← Back to categories</a>
+</div>
+
+{% endblock %}
