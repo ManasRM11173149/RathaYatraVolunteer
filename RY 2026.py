@@ -505,7 +505,7 @@ def signup_form(event_id, cat_id, task_id):
             "event_date": event["date"],
             "category_id": cat_id, "category_name": cat["name"],
             "task_id": task_id, "task_name": task["name"],
-            "task_time": task["time"],
+            "task_time": task.get("time", ""),
             "first_name": request.form.get("first_name", "").strip(),
             "last_name": request.form.get("last_name", "").strip(),
             "email": request.form.get("email", "").strip(),
