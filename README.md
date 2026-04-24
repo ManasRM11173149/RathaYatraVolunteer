@@ -1,4 +1,4 @@
-# RY 2026 — Ratha Yatra 2026 Volunteer Portal (v2)
+# Ratha Yatra Volunteer Portal (v2)
 
 A Flask web app for the Austin Hindu Temple's Ratha Yatra 2026 festival.
 Only **3 tabs**, event-based, with individual task slot signup.
