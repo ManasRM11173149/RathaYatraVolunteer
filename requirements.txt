@@ -1,3 +1,7 @@
 Flask==3.0.0
+gunicorn
+supabase
+resend
+python-dotenv
 # Optional — only if enabling real SMS via Twilio:
 # twilio>=8.0.0
