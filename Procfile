@@ -1,1 +1,1 @@
-web: gunicorn "RY 2026:app"
+web: gunicorn ryvolapp:app
