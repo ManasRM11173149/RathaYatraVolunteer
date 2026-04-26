@@ -115,7 +115,7 @@
     <div style="font-size: 12px; font-weight: 700; color: var(--text); margin-bottom: 10px;">Tasks</div>
     <div class="toggle-container">
       <span class="toggle-label">Pahandi Volunteer</span>
-      <button class="toggle-switch {% if flags.tasks['pahandi_volunteer'] %}enabled{% endif %}" 
+      <button class="toggle-switch {% if flags.get('tasks', {}).get('pahandi_volunteer', True) %}enabled{% endif %}" 
               onclick="toggleTask('Pahandi Volunteer', this)"
               title="Toggle Pahandi Volunteer"></button>
     </div>
@@ -245,27 +245,67 @@
 
 <script>
 function toggleEvent(eventId, button) {
-  fetch(`/admin/toggle-event/${eventId}`, {method: 'POST'})
+  const previousState = button.classList.contains('enabled');
+  button.classList.toggle('enabled');
+  
+  fetch('/admin/toggle-event', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ event_id: eventId })
+  })
     .then(r => r.json())
     .then(data => {
-      if (data.success) {
-        button.classList.toggle('enabled');
+      if (!data.success) {
+        // Revert on failure
+        if (previousState) button.classList.add('enabled');
+        else button.classList.remove('enabled');
+        console.error('Toggle failed:', data);
+        alert('Failed to save toggle state: ' + (data.error || 'Unknown error'));
+      } else {
         console.log(`Event ${eventId} toggled to ${data.enabled ? 'enabled' : 'disabled'}`);
       }
     })
-    .catch(e => console.error('Error toggling event:', e));
+    .catch(e => {
+      // Revert on error
+      if (previousState) button.classList.add('enabled');
+      else button.classList.remove('enabled');
+      console.error('Error toggling event:', e);
+      alert('Error saving toggle: ' + e.message);
+    });
 }
 
 function toggleTask(taskName, button) {
-  fetch(`/admin/toggle-task/${taskName}`, {method: 'POST'})
+  const previousState = button.classList.contains('enabled');
+  button.classList.toggle('enabled');
+  
+  fetch('/admin/toggle-task', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ task_name: taskName })
+  })
     .then(r => r.json())
     .then(data => {
-      if (data.success) {
-        button.classList.toggle('enabled');
+      if (!data.success) {
+        // Revert on failure
+        if (previousState) button.classList.add('enabled');
+        else button.classList.remove('enabled');
+        console.error('Toggle failed:', data);
+        alert('Failed to save toggle state: ' + (data.error || 'Unknown error'));
+      } else {
         console.log(`Task ${taskName} toggled to ${data.enabled ? 'enabled' : 'disabled'}`);
       }
     })
-    .catch(e => console.error('Error toggling task:', e));
+    .catch(e => {
+      // Revert on error
+      if (previousState) button.classList.add('enabled');
+      else button.classList.remove('enabled');
+      console.error('Error toggling task:', e);
+      alert('Error saving toggle: ' + e.message);
+    });
 }
 </script>
 

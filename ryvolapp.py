@@ -708,10 +708,15 @@ def admin_export_csv():
     return Response(output.getvalue(), mimetype="text/csv",
                     headers={"Content-Disposition": f'attachment; filename="{filename}"'})
 
-@app.route("/admin/toggle-event/<event_id>", methods=["POST"])
+@app.route("/admin/toggle-event", methods=["POST"])
 @admin_required
-def admin_toggle_event(event_id):
+def admin_toggle_event():
     """Toggle enable/disable status for an event."""
+    data = request.get_json() or {}
+    event_id = data.get("event_id")
+    if not event_id:
+        return jsonify({"success": False, "error": "Missing event_id"}), 400
+    
     flags = load_flags()
     if "events" not in flags:
         flags["events"] = {}
@@ -721,10 +726,15 @@ def admin_toggle_event(event_id):
     save_flags(flags)
     return jsonify({"success": True, "event_id": event_id, "enabled": flags["events"][event_id]})
 
-@app.route("/admin/toggle-task/<task_name>", methods=["POST"])
+@app.route("/admin/toggle-task", methods=["POST"])
 @admin_required
-def admin_toggle_task(task_name):
+def admin_toggle_task():
     """Toggle enable/disable status for a specific task (e.g., 'Pahandi Volunteer')."""
+    data = request.get_json() or {}
+    task_name = data.get("task_name")
+    if not task_name:
+        return jsonify({"success": False, "error": "Missing task_name"}), 400
+    
     flags = load_flags()
     if "tasks" not in flags:
         flags["tasks"] = {}
