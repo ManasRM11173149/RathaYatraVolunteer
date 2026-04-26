@@ -1,0 +1,12 @@
+{
+  "events": {
+    "snana_purnima": true,
+    "netra_utsava": true,
+    "ratha_yatra": true,
+    "hera_panchami": true,
+    "bahuda_yatra": true
+  },
+  "tasks": {
+    "pahandi_volunteer": true
+  }
+}

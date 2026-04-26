@@ -31,6 +31,7 @@ app.secret_key = "ry2026_v2_secret_change_in_production"
 # ═══════════════════════════════════════════════════════════════════
 DATA_DIR = os.path.join(os.path.dirname(__file__), "data")
 SIGNUPS_FILE = os.path.join(DATA_DIR, "signups.json")
+FLAGS_FILE = os.path.join(DATA_DIR, "flags.json")
 os.makedirs(DATA_DIR, exist_ok=True)
 
 ADMIN_USERNAME = os.environ.get("ADMIN_USERNAME", "admin")
@@ -247,6 +248,38 @@ def save_signups(rows):
     with open(SIGNUPS_FILE, "w") as f:
         json.dump(rows, f, indent=2)
 
+def load_flags():
+    """Load event and task flags. Initialize with defaults if not exists."""
+    if not os.path.exists(FLAGS_FILE):
+        flags = {
+            "events": {e["id"]: True for e in EVENTS},  # All events enabled by default
+            "tasks": {}  # Will store task-specific flags like "pahandi_volunteer": True
+        }
+        save_flags(flags)
+        return flags
+    try:
+        with open(FLAGS_FILE, "r") as f:
+            return json.load(f)
+    except (json.JSONDecodeError, IOError):
+        return {"events": {e["id"]: True for e in EVENTS}, "tasks": {}}
+
+def save_flags(flags):
+    """Save event and task flags to file."""
+    with open(FLAGS_FILE, "w") as f:
+        json.dump(flags, f, indent=2)
+
+def is_event_enabled(event_id):
+    """Check if event is enabled."""
+    flags = load_flags()
+    return flags.get("events", {}).get(event_id, True)
+
+def is_task_enabled(task_name):
+    """Check if a specific task is enabled (e.g., 'Pahandi Volunteer')."""
+    flags = load_flags()
+    # Create a normalized task key by converting to lowercase and replacing spaces with underscores
+    task_key = task_name.lower().replace(" ", "_")
+    return flags.get("tasks", {}).get(task_key, True)
+
 def get_event(event_id):
     return next((e for e in EVENTS if e["id"] == event_id), None)
 
@@ -391,6 +424,8 @@ The Ratha Yatra 2026 Committee
         return True, "email logged to console"
 
 def send_sms_confirmation(signup, event, task):
+    if not signup.get("phone"):
+        return True, "no phone number provided (skipped)"
     body = (f"Jai Jagannath {signup['first_name']}! Signed up: "
             f"{task['name']} at {event['name']} on {event['date']}, "
             f"{task['time']}. Venue: {CONTACT_INFO['venue']}.")
@@ -514,7 +549,7 @@ def signup_form(event_id, cat_id, task_id):
             "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
         }
         if not all([data["first_name"], data["last_name"],
-                    data["email"], data["phone"]]):
+                    data["email"]]):
             flash("Please fill in all fields.", "error")
             return render_template("signup_form.html", active="signup",
                                    event=event, category=cat, task=task,
@@ -598,17 +633,19 @@ def admin_logout():
 @admin_required
 def admin_dashboard():
     signups = load_signups()
+    flags = load_flags()
     events_with_stats = []
     for e in EVENTS:
         st = event_stats(e["id"])
-        events_with_stats.append({**e, "stats": st})
+        is_enabled = flags.get("events", {}).get(e["id"], True)
+        events_with_stats.append({**e, "stats": st, "enabled": is_enabled})
     total_slots = sum(e["stats"]["total"] for e in events_with_stats)
     total_filled = sum(e["stats"]["filled"] for e in events_with_stats)
     return render_template("admin_dashboard.html", active="admin",
                            events=events_with_stats, signups=signups,
                            total_slots=total_slots, total_filled=total_filled,
                            total_signups=len([s for s in signups if s["status"] != "withdrawn"]),
-                           contact=CONTACT_INFO)
+                           contact=CONTACT_INFO, flags=flags)
 
 @app.route("/admin/status/<sid>/<new_status>", methods=["POST"])
 @admin_required
@@ -653,6 +690,34 @@ def admin_export_csv():
     filename = f"ry2026_signups_{datetime.now():%Y%m%d_%H%M%S}.csv"
     return Response(output.getvalue(), mimetype="text/csv",
                     headers={"Content-Disposition": f'attachment; filename="{filename}"'})
+
+@app.route("/admin/toggle-event/<event_id>", methods=["POST"])
+@admin_required
+def admin_toggle_event(event_id):
+    """Toggle enable/disable status for an event."""
+    flags = load_flags()
+    if "events" not in flags:
+        flags["events"] = {}
+    # Toggle the event flag
+    current_state = flags["events"].get(event_id, True)
+    flags["events"][event_id] = not current_state
+    save_flags(flags)
+    return jsonify({"success": True, "event_id": event_id, "enabled": flags["events"][event_id]})
+
+@app.route("/admin/toggle-task/<task_name>", methods=["POST"])
+@admin_required
+def admin_toggle_task(task_name):
+    """Toggle enable/disable status for a specific task (e.g., 'Pahandi Volunteer')."""
+    flags = load_flags()
+    if "tasks" not in flags:
+        flags["tasks"] = {}
+    # Normalize task name
+    task_key = task_name.lower().replace(" ", "_")
+    # Toggle the task flag
+    current_state = flags["tasks"].get(task_key, True)
+    flags["tasks"][task_key] = not current_state
+    save_flags(flags)
+    return jsonify({"success": True, "task_name": task_name, "task_key": task_key, "enabled": flags["tasks"][task_key]})
 
 @app.route("/api/stats")
 def api_stats():
