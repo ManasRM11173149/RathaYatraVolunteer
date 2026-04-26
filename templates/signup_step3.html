@@ -126,7 +126,7 @@
 <div class="page-header">
   <div class="page-title">Volunteer slot view</div>
   <div class="page-sub">
-    Green = filled · White = open (click to sign up) · Red = withdrawn · Amber = pending
+    Green = filled · White = open (click to sign up) · Red = withdrawn
   </div>
 </div>
 
@@ -142,7 +142,6 @@
   <span><span class="legend-dot" style="background:var(--green-light)"></span>Filled</span>
   <span><span class="legend-dot" style="background:#fff;border:1.5px dashed var(--border)"></span>Open — click to register</span>
   <span><span class="legend-dot" style="background:var(--red-light)"></span>Withdrawn</span>
-  <span><span class="legend-dot" style="background:var(--amber)"></span>Pending confirmation</span>
 </div>
 
 <div class="card">
@@ -174,8 +173,6 @@
         {% for slot in t.slots %}
           {% if slot.status == 'filled' %}
             <span class="slot slot-filled" title="{{ slot.name }}">{{ slot.initials }}</span>
-          {% elif slot.status == 'pending' %}
-            <span class="slot slot-pending" title="{{ slot.name }} (pending)">{{ slot.initials }}</span>
           {% elif slot.status == 'withdrawn' %}
             <span class="slot slot-withdrawn" title="{{ slot.name }} (withdrawn)">{{ slot.initials }}</span>
           {% else %}
@@ -189,7 +186,7 @@
       {% set pct_class = 'high' if t.pct >= 80 else ('mid' if t.pct >= 50 else 'low') %}
       <div class="task-stats">
         <div class="task-stats-pct {{ pct_class }}">{% if t.open == 0 %}Full{% else %}{{ t.pct }}%{% endif %}</div>
-        <div>{{ t.filled }} filled{% if t.pending %} · {{ t.pending }} pending{% endif %}{% if t.open %} · {{ t.open }} open{% endif %} · {{ t.total }} total</div>
+        <div>{{ t.filled }} filled{% if t.open %} · {{ t.open }} open{% endif %} · {{ t.total }} total</div>
       </div>
     </div>
   {% endfor %}

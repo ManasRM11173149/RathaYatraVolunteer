@@ -34,7 +34,7 @@ SIGNUPS_FILE = os.path.join(DATA_DIR, "signups.json")
 os.makedirs(DATA_DIR, exist_ok=True)
 
 ADMIN_USERNAME = os.environ.get("ADMIN_USERNAME", "admin")
-ADMIN_PASSWORD = os.environ.get("ADMIN_PASSWORD", "rathayatra2026")
+ADMIN_PASSWORD = os.environ.get("ADMIN_PASSWORD", "RYevent2026")
 
 # Email (SMTP) — set env vars to enable real sending
 SMTP_SERVER = os.environ.get("SMTP_SERVER", "smtp.gmail.com")
@@ -184,7 +184,7 @@ EVENTS = [
     },
     {
         "id": "hera_panchami",
-        "name": "Hera Panchami Rituals",
+        "name": "Hera Panchami",
         "date": "July 25, 2026",
         "weekday": "Saturday",
         "time": "06:30 PM",

@@ -160,16 +160,4 @@
   {% endif %}
 </div>
 
-<!-- Contact info -->
-<div class="section-header">📞 Venue & Contact</div>
-<div class="card" style="font-size:12.5px;line-height:1.8">
-  <strong>Venue:</strong> {{ contact.venue }} · {{ contact.address }}<br>
-  <strong>WhatsApp:</strong>
-  <a href="{{ contact.whatsapp_link }}" target="_blank" style="color:var(--root-bg);font-weight:600">
-    {{ contact.whatsapp_name }}
-  </a><br>
-  <strong>Email:</strong>
-  <a href="mailto:{{ contact.email }}" style="color:var(--root-bg);font-weight:600">{{ contact.email }}</a>
-</div>
-
 {% endblock %}
