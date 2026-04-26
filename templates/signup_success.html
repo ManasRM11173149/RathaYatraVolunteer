@@ -10,7 +10,7 @@
   </div>
   <div style="font-size:13px;color:var(--text-muted);margin-bottom:18px">
     Jai Jagannath, <strong>{{ row.first_name }} {{ row.last_name }}</strong>!<br>
-    Confirmation sent to {{ row.email }} and {{ row.phone }}.
+    Confirmation sent to {{ row.email }}{% if row.phone %} and {{ row.phone }}{% endif %}.
   </div>
 
   <div style="display:flex;align-items:center;gap:14px;background:{{ event.light }};border-radius:8px;padding:14px;text-align:left;border-left:4px solid {{ event.color }}">
@@ -39,6 +39,11 @@
   <div style="display:flex;gap:10px;margin-top:20px;justify-content:center;flex-wrap:wrap">
     <a href="{{ url_for('signup_tasks', event_id=event.id, cat_id=category.id) }}"
        class="btn btn-secondary">Sign up for another task</a>
+    <form method="POST" action="{{ url_for('withdraw_signup', sid=row.id) }}"
+          onsubmit="return confirm('Are you sure you want to withdraw from {{ task.name }}?')"
+          style="display:inline">
+      <button type="submit" class="btn btn-danger">Withdraw</button>
+    </form>
     <a href="{{ url_for('signup_events') }}" class="btn">← Back to events</a>
   </div>
 </div>

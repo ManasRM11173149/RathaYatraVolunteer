@@ -670,6 +670,23 @@ def admin_delete(sid):
     flash("Signup deleted.", "success")
     return redirect(url_for("admin_dashboard"))
 
+@app.route("/withdraw/<sid>", methods=["POST"])
+def withdraw_signup(sid):
+    """Allow a volunteer to withdraw their own signup."""
+    rows = load_signups()
+    signup = None
+    for r in rows:
+        if r["id"] == sid:
+            signup = r
+            r["status"] = "withdrawn"
+            break
+    if not signup:
+        flash("Signup not found.", "error")
+        return redirect(url_for("signup_events"))
+    save_signups(rows)
+    flash(f"✓ Successfully withdrawn from {signup['task_name']}.", "success")
+    return redirect(url_for("signup_events"))
+
 @app.route("/admin/export.csv")
 @admin_required
 def admin_export_csv():
