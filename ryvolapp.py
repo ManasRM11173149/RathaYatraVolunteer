@@ -382,21 +382,21 @@ Your volunteer slot is confirmed.
 
 YOUR SIGNUP
 -----------
-Event:      {event['name']}
-Date:       {event['date']} ({event['weekday']})
-Time:       {event['time']}
-Category:   {category['name']}
-Task:       {task['name']}
-Shift:      {task['time']}
+Event:      {event.get('name', '')}
+Date:       {event.get('date', '')} ({event.get('weekday', '')})
+Time:       {event.get('time', '')}
+Category:   {category.get('name', '')}
+Task:       {task.get('name', '')}
+Shift:      {task.get('time', '')}
 Initials:   {signup['initials']}
 
 VENUE
 -----
-{CONTACT_INFO['venue']}
-{CONTACT_INFO['address']}
+{CONTACT_INFO.get('venue', '')}
+{CONTACT_INFO.get('address', '')}
 
 WhatsApp group:
-{CONTACT_INFO['whatsapp_link']}
+{CONTACT_INFO.get('whatsapp_link', '')}
 
 Jai Jagannath,
 The Ratha Yatra 2026 Committee
@@ -427,8 +427,8 @@ def send_sms_confirmation(signup, event, task):
     if not signup.get("phone"):
         return True, "no phone number provided (skipped)"
     body = (f"Jai Jagannath {signup['first_name']}! Signed up: "
-            f"{task['name']} at {event['name']} on {event['date']}, "
-            f"{task['time']}. Venue: {CONTACT_INFO['venue']}.")
+            f"{task.get('name', '')} at {event.get('name', '')} on {event.get('date', '')}, "
+            f"{task.get('time', '')}. Venue: {CONTACT_INFO.get('venue', '')}.")
     if TWILIO_SID and TWILIO_TOKEN and TWILIO_FROM:
         try:
             from twilio.rest import Client
