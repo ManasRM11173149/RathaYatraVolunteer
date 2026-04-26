@@ -228,7 +228,7 @@ CONTACT_INFO = {
     "venue": "Austin Hindu Temple",
     "address": "Decker Lake Road, Austin, TX 78724",
     "whatsapp_name": "RathaYatra 2026 Volunteers",
-    "whatsapp_link": "https://chat.whatsapp.com/BQKNR4eLV3K6lhNIMOv0Yi",
+    "whatsapp_link": "https://chat.whatsapp.com/HAPnfbZQ1Cf2WlPPzAiwRy?mode=gi_t",
     "email": "volunteers@rathayatra2026.org",
 }
 
