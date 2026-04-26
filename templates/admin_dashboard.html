@@ -98,6 +98,7 @@
 
 <!-- Event and Task Flags -->
 <div class="section-header">🚩 Event & Task Controls</div>
+<div id="toggle-message" class="alert alert-info" style="display:none; margin-bottom: 16px;"></div>
 <div class="card">
   <div style="margin-bottom: 18px;">
     <div style="font-size: 12px; font-weight: 700; color: var(--text); margin-bottom: 10px;">Events</div>
@@ -244,6 +245,18 @@
 </div>
 
 <script>
+function showToggleMessage(message, type = 'info') {
+  const msg = document.getElementById('toggle-message');
+  if (!msg) return;
+  msg.textContent = message;
+  msg.className = `alert alert-${type === 'error' ? 'error' : 'success'}`;
+  msg.style.display = 'block';
+  clearTimeout(window.toggleMessageTimeout);
+  window.toggleMessageTimeout = setTimeout(() => {
+    msg.style.display = 'none';
+  }, 4500);
+}
+
 function toggleEvent(eventId, button) {
   const previousState = button.classList.contains('enabled');
   button.classList.toggle('enabled');
@@ -258,21 +271,21 @@ function toggleEvent(eventId, button) {
     .then(r => r.json())
     .then(data => {
       if (!data.success) {
-        // Revert on failure
         if (previousState) button.classList.add('enabled');
         else button.classList.remove('enabled');
         console.error('Toggle failed:', data);
-        alert('Failed to save toggle state: ' + (data.error || 'Unknown error'));
+        showToggleMessage(`Failed to update ${eventId}: ${data.error || 'Unknown error'}`, 'error');
       } else {
-        console.log(`Event ${eventId} toggled to ${data.enabled ? 'enabled' : 'disabled'}`);
+        const status = data.enabled ? 'enabled' : 'disabled';
+        showToggleMessage(`Event ${eventId} ${status}.`, 'success');
+        console.log(`Event ${eventId} toggled to ${status}`);
       }
     })
     .catch(e => {
-      // Revert on error
       if (previousState) button.classList.add('enabled');
       else button.classList.remove('enabled');
       console.error('Error toggling event:', e);
-      alert('Error saving toggle: ' + e.message);
+      showToggleMessage('Error saving event toggle. Please try again.', 'error');
     });
 }
 
@@ -290,21 +303,21 @@ function toggleTask(taskName, button) {
     .then(r => r.json())
     .then(data => {
       if (!data.success) {
-        // Revert on failure
         if (previousState) button.classList.add('enabled');
         else button.classList.remove('enabled');
         console.error('Toggle failed:', data);
-        alert('Failed to save toggle state: ' + (data.error || 'Unknown error'));
+        showToggleMessage(`Failed to update ${taskName}: ${data.error || 'Unknown error'}`, 'error');
       } else {
-        console.log(`Task ${taskName} toggled to ${data.enabled ? 'enabled' : 'disabled'}`);
+        const status = data.enabled ? 'enabled' : 'disabled';
+        showToggleMessage(`Task ${taskName} ${status}.`, 'success');
+        console.log(`Task ${taskName} toggled to ${status}`);
       }
     })
     .catch(e => {
-      // Revert on error
       if (previousState) button.classList.add('enabled');
       else button.classList.remove('enabled');
       console.error('Error toggling task:', e);
-      alert('Error saving toggle: ' + e.message);
+      showToggleMessage('Error saving task toggle. Please try again.', 'error');
     });
 }
 </script>
