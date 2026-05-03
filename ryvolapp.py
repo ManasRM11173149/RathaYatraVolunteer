@@ -183,25 +183,7 @@ EVENTS = [
              ]},
         ],
     },
-    {
-        "id": "hera_panchami",
-        "name": "Hera Panchami",
-        "date": "July 25, 2026",
-        "weekday": "Saturday",
-        "time": "06:30 PM",
-        "color": "#BA7517", "light": "#FAEEDA", "dark": "#633806",
-        "categories": [
-            {"id": "cat1", "name": "Category 1",
-             "tasks": [
-                 {"id": "t1", "name": "Task A", "time": "6:00pm – 7:00pm", "tag": "Ritual", "slots": 4},
-                 {"id": "t2", "name": "Task B", "time": "6:30pm – 8:00pm", "tag": "Setup",  "slots": 3},
-             ]},
-            {"id": "cat2", "name": "Category 2",
-             "tasks": [
-                 {"id": "t3", "name": "Task A", "time": "6:30pm – 8:30pm", "tag": "Service","slots": 4},
-             ]},
-        ],
-    },
+    
     {
         "id": "bahuda_yatra",
         "name": "Bahuda Yatra",

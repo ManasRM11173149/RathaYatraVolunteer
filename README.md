@@ -30,7 +30,6 @@ Slot colors:
 | July 5 (Sunday) | Deva Snana Purnima | 04:30 PM |
 | July 17 (Friday) | Netra Utsava | 06:30 PM |
 | July 18 (Saturday) | Ratha Yatra | 05:00 PM |
-| July 25 (Saturday) | Hera Panchami Rituals | 06:30 PM |
 | July 26 (Sunday) | Bahuda Yatra | 10:00 AM |
 
 **Venue:** Austin Hindu Temple · Decker Lake Road, Austin, TX 78724
