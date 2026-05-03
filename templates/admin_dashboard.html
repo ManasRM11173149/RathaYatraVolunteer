@@ -96,30 +96,16 @@
   </div>
 </div>
 
-<!-- Event and Task Flags -->
-<div class="section-header">🚩 Event & Task Controls</div>
+<!-- Task Flags -->
+<div class="section-header">🚩 Task Controls</div>
 <div id="toggle-message" class="alert alert-info" style="display:none; margin-bottom: 16px;"></div>
 <div class="card">
-  <div style="margin-bottom: 18px;">
-    <div style="font-size: 12px; font-weight: 700; color: var(--text); margin-bottom: 10px;">Events</div>
-    {% for e in events %}
-      <div class="toggle-container">
-        <span class="toggle-label">{{ e.name }}</span>
-        <button class="toggle-switch {% if e.enabled %}enabled{% endif %}" 
-                onclick="toggleEvent('{{ e.id }}', this)"
-                title="Toggle {{ e.name }}"></button>
-      </div>
-    {% endfor %}
-  </div>
-
-  <div style="border-top: 1px solid var(--border); padding-top: 12px;">
-    <div style="font-size: 12px; font-weight: 700; color: var(--text); margin-bottom: 10px;">Tasks</div>
-    <div class="toggle-container">
-      <span class="toggle-label">Pahandi Volunteer</span>
-      <button class="toggle-switch {% if flags.get('tasks', {}).get('pahandi_volunteer', True) %}enabled{% endif %}" 
-              onclick="toggleTask('Pahandi Volunteer', this)"
-              title="Toggle Pahandi Volunteer"></button>
-    </div>
+  <div style="font-size: 12px; font-weight: 700; color: var(--text); margin-bottom: 10px;">Tasks</div>
+  <div class="toggle-container">
+    <span class="toggle-label">Pahandi Volunteer</span>
+    <button class="toggle-switch {% if flags.get('tasks', {}).get('pahandi_volunteer', True) %}enabled{% endif %}" 
+            onclick="toggleTask('Pahandi Volunteer', this)"
+            title="Toggle Pahandi Volunteer"></button>
   </div>
 </div>
 
@@ -255,38 +241,6 @@ function showToggleMessage(message, type = 'info') {
   window.toggleMessageTimeout = setTimeout(() => {
     msg.style.display = 'none';
   }, 4500);
-}
-
-function toggleEvent(eventId, button) {
-  const previousState = button.classList.contains('enabled');
-  button.classList.toggle('enabled');
-  
-  fetch('/admin/toggle-event', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({ event_id: eventId })
-  })
-    .then(r => r.json())
-    .then(data => {
-      if (!data.success) {
-        if (previousState) button.classList.add('enabled');
-        else button.classList.remove('enabled');
-        console.error('Toggle failed:', data);
-        showToggleMessage(`Failed to update ${eventId}: ${data.error || 'Unknown error'}`, 'error');
-      } else {
-        const status = data.enabled ? 'enabled' : 'disabled';
-        showToggleMessage(`Event ${eventId} ${status}.`, 'success');
-        console.log(`Event ${eventId} toggled to ${status}`);
-      }
-    })
-    .catch(e => {
-      if (previousState) button.classList.add('enabled');
-      else button.classList.remove('enabled');
-      console.error('Error toggling event:', e);
-      showToggleMessage('Error saving event toggle. Please try again.', 'error');
-    });
 }
 
 function toggleTask(taskName, button) {
