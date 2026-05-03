@@ -441,6 +441,9 @@ def admin_required(f):
     @wraps(f)
     def decorated(*args, **kwargs):
         if not session.get("admin_logged_in"):
+            # For API requests, return JSON error instead of redirecting
+            if request.is_json or request.path.startswith("/admin/toggle-"):
+                return jsonify({"success": False, "error": "Unauthorized"}), 401
             return redirect(url_for("admin_login"))
         return f(*args, **kwargs)
     return decorated

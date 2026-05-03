@@ -254,8 +254,15 @@ function toggleTask(taskName, button) {
     },
     body: JSON.stringify({ task_name: taskName })
   })
-    .then(r => r.json())
+    .then(r => {
+      if (r.status === 401) {
+        window.location.href = '{{ url_for("admin_login") }}';
+        return null;
+      }
+      return r.json();
+    })
     .then(data => {
+      if (!data) return; // Redirect case
       if (!data.success) {
         if (previousState) button.classList.add('enabled');
         else button.classList.remove('enabled');
