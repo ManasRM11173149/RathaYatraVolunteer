@@ -13,7 +13,24 @@
 .task-row:last-child { border-bottom: none; }
 .task-info { min-width: 0; }
 .task-name { font-size: 13.5px; font-weight: 600; color: var(--text); margin-bottom: 2px; }
-.task-meta { font-size: 11px; color: var(--text-muted); }
+.task-meta { 
+    font-size: 11px; color: var(--text-muted); }
+.task-slots {
+  display: flex; flex-wrap: wrap; gap: 5px;
+}
+.task-badge {
+  display: inline-block;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  margin-left: 8px;
+}
+.task-badge.coming-soon {
+  background: var(--orange-light);
+  color: var(--orange-dark);
+}
 .task-slots {
   display: flex; flex-wrap: wrap; gap: 5px;
 }
@@ -165,22 +182,33 @@
   {% for t in tasks %}
     <div class="task-row">
       <div class="task-info">
-        <div class="task-name">{{ t.name }}</div>
+        <div class="task-name">
+          {{ t.name }}
+          {% if 'pahandi' in t.name|lower and not t.is_enabled %}
+            <span class="task-badge coming-soon">Coming Soon</span>
+          {% endif %}
+        </div>
         <div class="task-meta">{% if t.time %}{{ t.time }}{% endif %}{% if t.time and t.tag %} · {% endif %}{% if t.tag %}{{ t.tag }}{% endif %}</div>
       </div>
 
       <div class="task-slots">
-        {% for slot in t.slots %}
-          {% if slot.status == 'filled' %}
-            <span class="slot slot-filled" title="{{ slot.name }}">{{ slot.initials }}</span>
-          {% elif slot.status == 'withdrawn' %}
-            <span class="slot slot-withdrawn" title="{{ slot.name }} (withdrawn)">{{ slot.initials }}</span>
-          {% else %}
-            <a class="slot slot-open"
-               href="{{ url_for('signup_form', event_id=event.id, cat_id=category.id, task_id=t.id) }}"
-               title="Sign up for this slot">+</a>
-          {% endif %}
-        {% endfor %}
+        {% if 'pahandi' in t.name|lower and not t.is_enabled %}
+          <div style="padding: 8px; text-align: center; color: var(--text-muted); font-size: 11px; width: 100%;">
+            🔒 Registration not yet open
+          </div>
+        {% else %}
+          {% for slot in t.slots %}
+            {% if slot.status == 'filled' %}
+              <span class="slot slot-filled" title="{{ slot.name }}">{{ slot.initials }}</span>
+            {% elif slot.status == 'withdrawn' %}
+              <span class="slot slot-withdrawn" title="{{ slot.name }} (withdrawn)">{{ slot.initials }}</span>
+            {% else %}
+              <a class="slot slot-open"
+                 href="{{ url_for('signup_form', event_id=event.id, cat_id=category.id, task_id=t.id) }}"
+                 title="Sign up for this slot">+</a>
+            {% endif %}
+          {% endfor %}
+        {% endif %}
       </div>
 
       {% set pct_class = 'high' if t.pct >= 80 else ('mid' if t.pct >= 50 else 'low') %}

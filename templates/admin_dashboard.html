@@ -99,14 +99,18 @@
 <!-- Task Flags -->
 <div class="section-header">🚩 Task Controls</div>
 <div id="toggle-message" class="alert alert-info" style="display:none; margin-bottom: 16px;"></div>
-<div class="card">
-  <div style="font-size: 12px; font-weight: 700; color: var(--text); margin-bottom: 10px;">Tasks</div>
+
+<!-- Pahandi Volunteer Variants -->
+<div class="card" style="margin-bottom: 20px;">
+  <div style="font-size: 12px; font-weight: 700; color: var(--text); margin-bottom: 10px;">Pahandi Volunteer Tasks (Per-Event Control)</div>
+  {% for pahandi in pahandi_tasks %}
   <div class="toggle-container">
-    <span class="toggle-label">Pahandi Volunteer</span>
-    <button class="toggle-switch {% if flags.get('tasks', {}).get('pahandi_volunteer', True) %}enabled{% endif %}" 
-            onclick="toggleTask('Pahandi Volunteer', this)"
-            title="Toggle Pahandi Volunteer"></button>
+    <span class="toggle-label">{{ pahandi.event_name }} - {{ pahandi.task_name }}</span>
+    <button class="toggle-switch {% if pahandi.enabled %}enabled{% endif %}" 
+            onclick="togglePahandiTask('{{ pahandi.event_id }}', '{{ pahandi.task_id }}', '{{ pahandi.task_name }}', this)"
+            title="Toggle {{ pahandi.task_name }}"></button>
   </div>
+  {% endfor %}
 </div>
 
 <!-- Overview stats -->
@@ -279,6 +283,44 @@ function toggleTask(taskName, button) {
       else button.classList.remove('enabled');
       console.error('Error toggling task:', e);
       showToggleMessage('Error saving task toggle. Please try again.', 'error');
+    });
+}
+
+function togglePahandiTask(eventId, taskId, taskName, button) {
+  const previousState = button.classList.contains('enabled');
+  button.classList.toggle('enabled');
+  
+  fetch(`/admin/toggle-pahandi/${eventId}/${taskId}/${encodeURIComponent(taskName)}`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    }
+  })
+    .then(r => {
+      if (r.status === 401) {
+        window.location.href = '{{ url_for("admin_login") }}';
+        return null;
+      }
+      return r.json();
+    })
+    .then(data => {
+      if (!data) return; // Redirect case
+      if (!data.success) {
+        if (previousState) button.classList.add('enabled');
+        else button.classList.remove('enabled');
+        console.error('Toggle failed:', data);
+        showToggleMessage(`Failed to update ${taskName}: ${data.error || 'Unknown error'}`, 'error');
+      } else {
+        const status = data.enabled ? 'enabled' : 'disabled';
+        showToggleMessage(`Pahandi task ${status}.`, 'success');
+        console.log(`Pahandi task ${taskName} toggled to ${status}`);
+      }
+    })
+    .catch(e => {
+      if (previousState) button.classList.add('enabled');
+      else button.classList.remove('enabled');
+      console.error('Error toggling pahandi task:', e);
+      showToggleMessage('Error saving pahandi toggle. Please try again.', 'error');
     });
 }
 </script>

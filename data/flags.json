@@ -3,10 +3,13 @@
     "snana_purnima": true,
     "netra_utsava": true,
     "ratha_yatra": true,
-    "hera_panchami": true,
     "bahuda_yatra": true
   },
   "tasks": {
-    "pahandi_volunteer": true
+    "snana_purnima_t12_pahandi_volunteer": false,
+    "netra_utsava_t11_pahandi_volunteer_anasara__ratnabedi": false,
+    "ratha_yatra_t18_pahandi_volunteer_anasara__ratnabedi": true,
+    "ratha_yatra_t26_pahandi_ratnabedi__ratha": false,
+    "ratha_yatra_t29_pahandi_ratha__gundicha_temple": false
   }
 }

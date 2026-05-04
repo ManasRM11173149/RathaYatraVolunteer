@@ -230,12 +230,32 @@ def save_signups(rows):
     with open(SIGNUPS_FILE, "w") as f:
         json.dump(rows, f, indent=2)
 
+def get_task_toggle_key(event_id, task_id, task_name):
+    """Generate a unique toggle key for a specific task (event_id + task_id).
+    For Pahandi tasks, this allows per-event/per-variant control."""
+    return f"{event_id}_{task_id}_{task_name.lower().replace(' ', '_').replace('(', '').replace(')', '').replace('→', '')}"
+
+def is_pahandi_task(task_name):
+    """Check if a task is a Pahandi variant task."""
+    return "pahandi" in task_name.lower()
+
+def _initialize_pahandi_flags():
+    """Initialize all Pahandi variant flags to OFF (False)."""
+    pahandi_flags = {}
+    for event in EVENTS:
+        for category in event.get("categories", []):
+            for task in category.get("tasks", []):
+                if is_pahandi_task(task["name"]):
+                    task_key = get_task_toggle_key(event["id"], task["id"], task["name"])
+                    pahandi_flags[task_key] = False  # Default to OFF (disabled)
+    return pahandi_flags
+
 def load_flags():
     """Load event and task flags. Initialize with defaults if not exists."""
     if not os.path.exists(FLAGS_FILE):
         flags = {
             "events": {e["id"]: True for e in EVENTS},  # All events enabled by default
-            "tasks": {}  # Will store task-specific flags like "pahandi_volunteer": True
+            "tasks": _initialize_pahandi_flags()  # Initialize Pahandi task toggles to OFF (False)
         }
         save_flags(flags)
         return flags
@@ -243,7 +263,7 @@ def load_flags():
         with open(FLAGS_FILE, "r") as f:
             return json.load(f)
     except (json.JSONDecodeError, IOError):
-        return {"events": {e["id"]: True for e in EVENTS}, "tasks": {}}
+        return {"events": {e["id"]: True for e in EVENTS}, "tasks": _initialize_pahandi_flags()}
 
 def save_flags(flags):
     """Save event and task flags to file."""
@@ -261,6 +281,17 @@ def is_task_enabled(task_name):
     # Create a normalized task key by converting to lowercase and replacing spaces with underscores
     task_key = task_name.lower().replace(" ", "_")
     return flags.get("tasks", {}).get(task_key, True)
+
+def is_specific_task_enabled(event_id, task_id, task_name):
+    """Check if a specific task variant is enabled (for per-event Pahandi control)."""
+    # Only use per-event toggle for Pahandi tasks
+    if is_pahandi_task(task_name):
+        flags = load_flags()
+        task_key = get_task_toggle_key(event_id, task_id, task_name)
+        # Pahandi tasks default to False (disabled) unless explicitly enabled
+        return flags.get("tasks", {}).get(task_key, False)
+    # For non-Pahandi tasks, use regular is_task_enabled
+    return is_task_enabled(task_name)
 
 def get_event(event_id):
     return next((e for e in EVENTS if e["id"] == event_id), None)
@@ -497,7 +528,8 @@ def signup_tasks(event_id, cat_id):
     tasks_with_slots = []
     for task in cat["tasks"]:
         st = task_stats(event_id, cat_id, task["id"])
-        tasks_with_slots.append({**task, **st})
+        task_enabled = is_specific_task_enabled(event_id, task["id"], task["name"])
+        tasks_with_slots.append({**task, **st, "is_enabled": task_enabled})
     event_with_stats = {**event, "stats": event_stats(event_id)}
     return render_template("signup_step3.html", active="signup",
                            event=event_with_stats, category=cat,
@@ -512,6 +544,11 @@ def signup_form(event_id, cat_id, task_id):
     if not task:
         flash("Task not found.", "error")
         return redirect(url_for("signup_events"))
+
+    # Check if Pahandi task is enabled
+    if is_pahandi_task(task["name"]) and not is_specific_task_enabled(event_id, task_id, task["name"]):
+        flash(f"Sorry — {task['name']} is not yet available. Check back soon!", "error")
+        return redirect(url_for("signup_tasks", event_id=event_id, cat_id=cat_id))
 
     st = task_stats(event_id, cat_id, task_id)
     if st["open"] <= 0:
@@ -620,17 +657,40 @@ def admin_dashboard():
     signups = load_signups()
     flags = load_flags()
     events_with_stats = []
+    
+    # Collect all Pahandi task variants with their toggle status
+    pahandi_tasks = []
+    
     for e in EVENTS:
         st = event_stats(e["id"])
         is_enabled = flags.get("events", {}).get(e["id"], True)
-        events_with_stats.append({**e, "stats": st, "enabled": is_enabled})
+        event_with_stats = {**e, "stats": st, "enabled": is_enabled}
+        
+        # Find Pahandi tasks in this event
+        for cat in e.get("categories", []):
+            for task in cat.get("tasks", []):
+                if is_pahandi_task(task["name"]):
+                    task_key = get_task_toggle_key(e["id"], task["id"], task["name"])
+                    is_pahandi_enabled = flags.get("tasks", {}).get(task_key, False)
+                    pahandi_tasks.append({
+                        "event_id": e["id"],
+                        "event_name": e["name"],
+                        "task_id": task["id"],
+                        "task_name": task["name"],
+                        "task_key": task_key,
+                        "enabled": is_pahandi_enabled,
+                        "slots": task["slots"]
+                    })
+        
+        events_with_stats.append(event_with_stats)
+    
     total_slots = sum(e["stats"]["total"] for e in events_with_stats)
     total_filled = sum(e["stats"]["filled"] for e in events_with_stats)
     return render_template("admin_dashboard.html", active="admin",
                            events=events_with_stats, signups=signups,
                            total_slots=total_slots, total_filled=total_filled,
                            total_signups=len([s for s in signups if s["status"] != "withdrawn"]),
-                           contact=CONTACT_INFO, flags=flags)
+                           contact=CONTACT_INFO, flags=flags, pahandi_tasks=pahandi_tasks)
 
 @app.route("/admin/status/<sid>/<new_status>", methods=["POST"])
 @admin_required
@@ -730,6 +790,31 @@ def admin_toggle_task():
     flags["tasks"][task_key] = not current_state
     save_flags(flags)
     return jsonify({"success": True, "task_name": task_name, "task_key": task_key, "enabled": flags["tasks"][task_key]})
+
+@app.route("/admin/toggle-pahandi/<event_id>/<task_id>/<task_name>", methods=["POST"])
+@admin_required
+def admin_toggle_pahandi(event_id, task_id, task_name):
+    """Toggle enable/disable status for a specific Pahandi task variant (per-event control)."""
+    flags = load_flags()
+    if "tasks" not in flags:
+        flags["tasks"] = {}
+    
+    # Generate unique key for this Pahandi variant
+    task_key = get_task_toggle_key(event_id, task_id, task_name)
+    
+    # Toggle the flag
+    current_state = flags["tasks"].get(task_key, False)  # Pahandi defaults to OFF
+    flags["tasks"][task_key] = not current_state
+    save_flags(flags)
+    
+    return jsonify({
+        "success": True,
+        "event_id": event_id,
+        "task_id": task_id,
+        "task_name": task_name,
+        "task_key": task_key,
+        "enabled": flags["tasks"][task_key]
+    })
 
 @app.route("/api/stats")
 def api_stats():
