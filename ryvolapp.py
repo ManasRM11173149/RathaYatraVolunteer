@@ -12,7 +12,7 @@ Slot states: filled / open / pending / withdrawn.
 """
 
 from flask import (Flask, render_template, request, redirect, url_for,
-                   jsonify, session, flash, Response)
+                   jsonify, session, flash, Response, g)
 from datetime import datetime
 from functools import wraps
 import json
@@ -256,7 +256,8 @@ def _save_signups_json(rows):
     with open(SIGNUPS_FILE, "w") as f:
         json.dump(rows, f, indent=2)
 
-def load_signups():
+def _load_signups_fresh():
+    """Load signups from Supabase or JSON (no caching)."""
     sb = _sb()
     if sb:
         try:
@@ -266,19 +267,23 @@ def load_signups():
             print(f"[supabase] load_signups failed, using JSON: {e}")
     return _load_signups_json()
 
+def load_signups():
+    """Load signups with request-level caching (per-request, not global)."""
+    if "_signups_cache" not in g:
+        g._signups_cache = _load_signups_fresh()
+    return g._signups_cache
+
 def save_signups(rows):
-    """Persist the full signups list. Supabase: diff-based delete + upsert."""
+    """Persist the full signups list. Updates request cache."""
+    g._signups_cache = rows  # Update cache
+    
     sb = _sb()
     if sb:
         try:
-            existing = sb.table("signups").select("id").execute().data or []
-            existing_ids = {r["id"] for r in existing}
-            current_ids = {r["id"] for r in rows}
-            to_delete = list(existing_ids - current_ids)
-            if to_delete:
-                sb.table("signups").delete().in_("id", to_delete).execute()
             if rows:
                 sb.table("signups").upsert(rows).execute()
+            else:
+                sb.table("signups").delete().neq("id", "").execute()
             return
         except Exception as e:
             print(f"[supabase] save_signups failed, using JSON: {e}")
@@ -319,8 +324,8 @@ def _save_flags_json(flags):
     with open(FLAGS_FILE, "w") as f:
         json.dump(flags, f, indent=2)
 
-def load_flags():
-    """Load event and task flags. Defaults: all events enabled, no task overrides."""
+def _load_flags_fresh():
+    """Load flags from Supabase or JSON (no caching)."""
     sb = _sb()
     if sb:
         try:
@@ -335,6 +340,13 @@ def load_flags():
         except Exception as e:
             print(f"[supabase] load_flags failed, using JSON: {e}")
     return _load_flags_json()
+
+def load_flags():
+    """Load flags with request-level caching (per-request, not global)."""
+    if "_flags_cache" not in g:
+        g._flags_cache = _load_flags_fresh()
+    return g._flags_cache
+
 
 def save_flags(flags):
     """Persist event and task flags."""
