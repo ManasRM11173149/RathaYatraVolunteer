@@ -23,8 +23,14 @@ import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 
+try:
+    from dotenv import load_dotenv
+    load_dotenv()
+except ImportError:
+    pass
+
 app = Flask(__name__)
-app.secret_key = "ry2026_v2_secret_change_in_production"
+app.secret_key = os.environ.get("FLASK_SECRET_KEY", "ry2026_v2_secret_change_in_production")
 
 # ═══════════════════════════════════════════════════════════════════
 # CONFIGURATION
@@ -37,7 +43,27 @@ os.makedirs(DATA_DIR, exist_ok=True)
 ADMIN_USERNAME = os.environ.get("ADMIN_USERNAME", "admin")
 ADMIN_PASSWORD = os.environ.get("ADMIN_PASSWORD", "RYevent2026")
 
-# Email (SMTP) — set env vars to enable real sending
+# Supabase — falls back to local JSON files when not configured
+SUPABASE_URL = os.environ.get("SUPABASE_URL", "")
+SUPABASE_SERVICE_ROLE_KEY = os.environ.get("SUPABASE_SERVICE_ROLE_KEY", "")
+_supabase_client = None
+
+def _sb():
+    """Return a cached supabase client, or None if env vars are missing."""
+    global _supabase_client
+    if not (SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY):
+        return None
+    if _supabase_client is None:
+        try:
+            from supabase import create_client
+            _supabase_client = create_client(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY)
+        except Exception as e:
+            print(f"[supabase] init failed, falling back to JSON: {e}")
+            return None
+    return _supabase_client
+
+# Email — Resend (preferred) with SMTP fallback
+RESEND_API_KEY = os.environ.get("RESEND_API_KEY", "")
 SMTP_SERVER = os.environ.get("SMTP_SERVER", "smtp.gmail.com")
 SMTP_PORT = int(os.environ.get("SMTP_PORT", 587))
 SMTP_USER = os.environ.get("SMTP_USER", "")
@@ -215,9 +241,9 @@ CONTACT_INFO = {
 }
 
 # ═══════════════════════════════════════════════════════════════════
-# DATA HELPERS
+# DATA HELPERS — Supabase preferred, JSON file fallback
 # ═══════════════════════════════════════════════════════════════════
-def load_signups():
+def _load_signups_json():
     if not os.path.exists(SIGNUPS_FILE):
         return []
     try:
@@ -226,9 +252,37 @@ def load_signups():
     except (json.JSONDecodeError, IOError):
         return []
 
-def save_signups(rows):
+def _save_signups_json(rows):
     with open(SIGNUPS_FILE, "w") as f:
         json.dump(rows, f, indent=2)
+
+def load_signups():
+    sb = _sb()
+    if sb:
+        try:
+            res = sb.table("signups").select("*").order("timestamp", desc=False).execute()
+            return res.data or []
+        except Exception as e:
+            print(f"[supabase] load_signups failed, using JSON: {e}")
+    return _load_signups_json()
+
+def save_signups(rows):
+    """Persist the full signups list. Supabase: diff-based delete + upsert."""
+    sb = _sb()
+    if sb:
+        try:
+            existing = sb.table("signups").select("id").execute().data or []
+            existing_ids = {r["id"] for r in existing}
+            current_ids = {r["id"] for r in rows}
+            to_delete = list(existing_ids - current_ids)
+            if to_delete:
+                sb.table("signups").delete().in_("id", to_delete).execute()
+            if rows:
+                sb.table("signups").upsert(rows).execute()
+            return
+        except Exception as e:
+            print(f"[supabase] save_signups failed, using JSON: {e}")
+    _save_signups_json(rows)
 
 def get_task_toggle_key(event_id, task_id, task_name):
     """Generate a unique toggle key for a specific task (event_id + task_id).
@@ -250,25 +304,54 @@ def _initialize_pahandi_flags():
                     pahandi_flags[task_key] = False  # Default to OFF (disabled)
     return pahandi_flags
 
-def load_flags():
-    """Load event and task flags. Initialize with defaults if not exists."""
+def _load_flags_json():
     if not os.path.exists(FLAGS_FILE):
-        flags = {
-            "events": {e["id"]: True for e in EVENTS},  # All events enabled by default
-            "tasks": _initialize_pahandi_flags()  # Initialize Pahandi task toggles to OFF (False)
-        }
-        save_flags(flags)
+        flags = {"events": {e["id"]: True for e in EVENTS}, "tasks": {}}
+        _save_flags_json(flags)
         return flags
     try:
         with open(FLAGS_FILE, "r") as f:
             return json.load(f)
     except (json.JSONDecodeError, IOError):
-        return {"events": {e["id"]: True for e in EVENTS}, "tasks": _initialize_pahandi_flags()}
+        return {"events": {e["id"]: True for e in EVENTS}, "tasks": {}}
 
-def save_flags(flags):
-    """Save event and task flags to file."""
+def _save_flags_json(flags):
     with open(FLAGS_FILE, "w") as f:
         json.dump(flags, f, indent=2)
+
+def load_flags():
+    """Load event and task flags. Defaults: all events enabled, no task overrides."""
+    sb = _sb()
+    if sb:
+        try:
+            res = sb.table("flags").select("*").execute()
+            flags = {"events": {e["id"]: True for e in EVENTS}, "tasks": {}}
+            for row in (res.data or []):
+                bucket = "events" if row.get("kind") == "event" else "tasks"
+                flags.setdefault(bucket, {})[row["key"]] = bool(row.get("enabled", True))
+            for e in EVENTS:
+                flags["events"].setdefault(e["id"], True)
+            return flags
+        except Exception as e:
+            print(f"[supabase] load_flags failed, using JSON: {e}")
+    return _load_flags_json()
+
+def save_flags(flags):
+    """Persist event and task flags."""
+    sb = _sb()
+    if sb:
+        try:
+            rows = []
+            for event_id, enabled in flags.get("events", {}).items():
+                rows.append({"kind": "event", "key": event_id, "enabled": bool(enabled)})
+            for task_key, enabled in flags.get("tasks", {}).items():
+                rows.append({"kind": "task", "key": task_key, "enabled": bool(enabled)})
+            if rows:
+                sb.table("flags").upsert(rows, on_conflict="kind,key").execute()
+            return
+        except Exception as e:
+            print(f"[supabase] save_flags failed, using JSON: {e}")
+    _save_flags_json(flags)
 
 def is_event_enabled(event_id):
     """Check if event is enabled."""
@@ -414,6 +497,22 @@ WhatsApp group:
 Jai Jagannath,
 The Ratha Yatra 2026 Committee
 """
+    # Preferred: Resend
+    if RESEND_API_KEY:
+        try:
+            import resend
+            resend.api_key = RESEND_API_KEY
+            resend.Emails.send({
+                "from": FROM_EMAIL,
+                "to": [signup["email"]],
+                "subject": subject,
+                "text": body,
+            })
+            return True, "Email delivered (Resend)"
+        except Exception as e:
+            print(f"[resend] send failed, falling back: {e}")
+
+    # Fallback: SMTP
     if SMTP_USER and SMTP_PASS:
         try:
             msg = MIMEMultipart()
@@ -425,16 +524,17 @@ The Ratha Yatra 2026 Committee
                 server.starttls()
                 server.login(SMTP_USER, SMTP_PASS)
                 server.send_message(msg)
-            return True, "Email delivered"
+            return True, "Email delivered (SMTP)"
         except Exception as e:
             return False, f"Email error: {e}"
-    else:
-        print("\n" + "=" * 60)
-        print("EMAIL CONFIRMATION (Demo — SMTP not configured)")
-        print("=" * 60)
-        print(f"To: {signup['email']}\nSubject: {subject}\n{body}")
-        print("=" * 60 + "\n")
-        return True, "email logged to console"
+
+    # Last resort: log to console (dev mode)
+    print("\n" + "=" * 60)
+    print("EMAIL CONFIRMATION (Demo — no email provider configured)")
+    print("=" * 60)
+    print(f"To: {signup['email']}\nSubject: {subject}\n{body}")
+    print("=" * 60 + "\n")
+    return True, "email logged to console"
 
 def send_sms_confirmation(signup, event, task):
     if not signup.get("phone"):
