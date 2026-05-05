@@ -87,6 +87,9 @@
     <div class="admin-badge-sub">Signups · Slot states · Task fills · Export</div>
   </div>
   <div style="display:flex;gap:8px;flex-wrap:wrap">
+    <a href="{{ url_for('statistics') }}" class="btn btn-secondary" style="padding:6px 12px;font-size:11px">
+      📊 Volunteer Statistics
+    </a>
     <a href="{{ url_for('admin_export_csv') }}" class="btn btn-success" style="padding:6px 12px;font-size:11px">
       📥 Export CSV
     </a>
