@@ -630,9 +630,6 @@ body {
   <a href="{{ url_for('signup_events') }}" class="tab {% if active=='signup' %}active{% endif %}">
     🙋 Volunteer Signup
   </a>
-  <a href="{{ url_for('statistics') }}" class="tab {% if active=='statistics' %}active{% endif %}">
-    📊 Volunteer Statistics
-  </a>
   <a href="{{ url_for('admin_dashboard') if session.admin_logged_in else url_for('admin_login') }}"
      class="tab admin-tab {% if active=='admin' %}active{% endif %}">
     🔒 Admin Dashboard

@@ -717,6 +717,7 @@ def signup_success(sid):
 # STATISTICS
 # ═══════════════════════════════════════════════════════════════════
 @app.route("/statistics")
+@admin_required
 def statistics():
     signups = load_signups()
     events_with_stats = []
