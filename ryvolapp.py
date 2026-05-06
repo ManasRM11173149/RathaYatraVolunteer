@@ -86,10 +86,10 @@ EVENTS = [
         "name": "Deva Snana Purnima",
         "date": "July 5, 2026",
         "weekday": "Sunday",
-        "time": "04:30 PM",
+        "time": "10:30 AM",
         "color": "#378ADD", "light": "#E6F1FB", "dark": "#0C447C",
         "categories": [
-            {"id": "setup_supplies", "name": "Setup & Supplies",
+            {"id": "setup_supplies", "name": "Setup & Supplies", "date": "July 4, 2026",
              "tasks": [
                  {"id": "t1", "name": "Snana Mandap Arrangement", "slots": 5},
                  {"id": "t2", "name": "Seclusion Chamber Setup", "slots": 5},
@@ -100,7 +100,7 @@ EVENTS = [
                  {"id": "t7", "name": "Water Station", "slots": 2},
                  {"id": "t8", "name": "Snana Mandap Dismantle", "slots": 8},
              ]},
-            {"id": "ritual_ceremony", "name": "Ritual & Ceremony",
+            {"id": "ritual_ceremony", "name": "Ritual & Ceremony", "date": "July 5, 2026",
              "tasks": [
                  {"id": "t9", "name": "Flower Arrangement", "slots": 1},
                  {"id": "t10", "name": "Puja Samagri Purchase", "slots": 1},
@@ -108,7 +108,7 @@ EVENTS = [
                  {"id": "t12", "name": "Pahandi Volunteer", "slots": 13},
                  {"id": "t13", "name": "Coconut and Mango Leaves Purchase", "slots": 2},
              ]},
-            {"id": "prasad_prep", "name": "Prasad Prep & Serving",
+            {"id": "prasad_prep", "name": "Prasad Prep & Serving", "date": "July 5, 2026",
              "tasks": [
                  {"id": "t14", "name": "Prasad Prep at AHT Kitchen", "slots": 4},
                  {"id": "t15", "name": "Prasad Serving and Cleanup", "slots": 6},
@@ -123,7 +123,7 @@ EVENTS = [
         "time": "06:30 PM",
         "color": "#639922", "light": "#EAF3DE", "dark": "#27500A",
         "categories": [
-            {"id": "setup_supplies", "name": "Setup & Supplies",
+            {"id": "setup_supplies", "name": "Setup & Supplies", "date": "July 17, 2026",
              "tasks": [
                  {"id": "t2", "name": "Seclusion Chamber Dismantle", "slots": 5},
                  {"id": "t3", "name": "Garbhalaya Cleanup", "slots": 2},
@@ -132,14 +132,14 @@ EVENTS = [
                  {"id": "t6", "name": "Water Delivery", "slots": 2},
                  {"id": "t7", "name": "Water Station", "slots": 2},
              ]},
-            {"id": "ritual_ceremony", "name": "Ritual & Ceremony",
+            {"id": "ritual_ceremony", "name": "Ritual & Ceremony", "date": "July 17, 2026",
              "tasks": [
                  {"id": "t8", "name": "Flower Arrangement", "slots": 1},
                  {"id": "t9", "name": "Puja Samagri Purchase", "slots": 1},
                  {"id": "t10", "name": "Vastra Arrangement", "slots": 1},
                  {"id": "t11", "name": "Pahandi Volunteer (Anasara → Ratnabedi)", "slots": 13},
              ]},
-            {"id": "prasad_prep", "name": "Prasad Prep & Serving",
+            {"id": "prasad_prep", "name": "Prasad Prep & Serving", "date": "July 17, 2026",
              "tasks": [
                  {"id": "t12", "name": "Prasad Prep at AHT Kitchen", "slots": 4},
                  {"id": "t13", "name": "Prasad Serving and Cleanup", "slots": 6},
@@ -154,7 +154,7 @@ EVENTS = [
         "time": "05:00 PM",
         "color": "#D4537E", "light": "#FBEAF0", "dark": "#72243E",
         "categories": [
-            {"id": "pre_event_setup", "name": "Pre-Event - Setup & Supplies",
+            {"id": "pre_event_setup", "name": "Pre-Event - Setup & Supplies", "date": "July 7 Onwards",
              "tasks": [
                  {"id": "t1", "name": "Gundicha Mandap Arrangement", "slots": 3},
                  {"id": "t2", "name": "Tulasi Mala", "slots": 2},
@@ -167,14 +167,14 @@ EVENTS = [
                  {"id": "t9", "name": "Storage Coordinator", "slots": 2},
                  {"id": "t10", "name": "Ratha Assemble & Decoration", "slots": 8},
              ]},
-            {"id": "event_setup", "name": "Event - Setup & Supplies",
+            {"id": "event_setup", "name": "Event - Setup & Supplies", "date": "July 17, 2026",
              "tasks": [
                  {"id": "t11", "name": "Prasad Serving Logistics", "slots": 2},
                  {"id": "t12", "name": "Water/Buttermilk Serving", "slots": 8},
                  {"id": "t13", "name": "Storage Coordinator", "slots": 2},
                  {"id": "t14", "name": "Ratha Assemble & Decoration", "slots": 8},
              ]},
-            {"id": "pre_event_ritual", "name": "Pre-Event Ritual & Ceremony",
+            {"id": "pre_event_ritual", "name": "Pre-Event Ritual & Ceremony", "date": "July 17, 2026",
              "tasks": [
                  {"id": "t15", "name": "Flower Arrangement", "slots": 1},
                  {"id": "t16", "name": "Puja Samagri Purchase", "slots": 1},
@@ -183,7 +183,7 @@ EVENTS = [
                  {"id": "t19", "name": "Kala-archana Arrangement", "slots": 1},
                  {"id": "t20", "name": "Ghanta Arrangement", "slots": 1},
              ]},
-            {"id": "event_ritual", "name": "Event Ritual & Ceremony",
+            {"id": "event_ritual", "name": "Event Ritual & Ceremony", "date": "July 18, 2026",
              "tasks": [
                  {"id": "t21", "name": "Havan Arrangement", "slots": 1},
                  {"id": "t22", "name": "Puja Samagri Purchase", "slots": 1},
@@ -196,12 +196,12 @@ EVENTS = [
                  {"id": "t29", "name": "Pahandi (Ratha → Gundicha Temple)", "slots": 19},
                  {"id": "t30", "name": "Special Bhoga", "slots": 3},
              ]},
-            {"id": "pre_event_prasad", "name": "Pre-Event Prasad Prep",
+            {"id": "pre_event_prasad", "name": "Pre-Event Prasad Prep", "date": "July 17, 2026",
              "tasks": [
                  {"id": "t31", "name": "Prasad Prep at AHT Kitchen", "slots": 15},
                  {"id": "t32", "name": "AHT Coordination", "slots": 1},
              ]},
-            {"id": "event_prasad", "name": "Event Prasad Prep",
+            {"id": "event_prasad", "name": "Event Prasad Prep", "date": "July 18, 2026",
              "tasks": [
                  {"id": "t33", "name": "Prasad Prep at AHT Kitchen", "slots": 10},
                  {"id": "t34", "name": "Prasad Serving", "slots": 15},
@@ -218,15 +218,20 @@ EVENTS = [
         "time": "10:00 AM",
         "color": "#534AB7", "light": "#EEEDFE", "dark": "#26215C",
         "categories": [
-            {"id": "cat1", "name": "Category 1",
+            {"id": "setup_supplies", "name": "Setup & Supplies", "date": "July 25, 2026",
              "tasks": [
                  {"id": "t1", "name": "Task A", "time": "9:00am – 12:00pm", "tag": "Outdoor", "slots": 10},
-                 {"id": "t2", "name": "Task B", "time": "8:00am – 10:00am", "tag": "Creative","slots": 6},
+                 {"id": "t2", "name": "Task B", "time": "8:00am – 10:00am", "tag": "Creative", "slots": 6},
              ]},
-            {"id": "cat2", "name": "Category 2",
+            {"id": "ritual_ceremony", "name": "Ritual & Ceremony", "date": "July 26, 2026",
              "tasks": [
-                 {"id": "t3", "name": "Task A", "time": "10:00am – 2:00pm","tag": "Service", "slots": 8},
-                 {"id": "t4", "name": "Task B", "time": "7:00am – 11:00am","tag": "Kitchen", "slots": 5},
+                 {"id": "t3", "name": "Task A", "time": "10:00am – 2:00pm", "tag": "Service", "slots": 8},
+                 {"id": "t4", "name": "Task B", "time": "7:00am – 11:00am", "tag": "Kitchen", "slots": 5},
+             ]},
+            {"id": "prasad_prep", "name": "Prasad Prep & Serving", "date": "July 26, 2026",
+             "tasks": [
+                 {"id": "t5", "name": "Task A", "time": "TBD", "tag": "TBD", "slots": 4},
+                 {"id": "t6", "name": "Task B", "time": "TBD", "tag": "TBD", "slots": 4},
              ]},
         ],
     },
