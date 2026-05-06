@@ -53,7 +53,7 @@
     <a href="{{ url_for('signup_tasks', event_id=event.id, cat_id=c.id) }}"
        class="cat-card" style="border-left-color:{{ event.color }}">
       <div class="cat-name" style="color:{{ event.dark }}">{{ c.name }}</div>
-      <div class="cat-meta">{{ c.tasks|length }} task{{ 's' if c.tasks|length != 1 else '' }}</div>
+      <div class="cat-meta">{% if c.date %}<span style="color:{{ event.dark }};font-weight:600">📅 {{ c.date }}</span> · {% endif %}{{ c.tasks|length }} task{{ 's' if c.tasks|length != 1 else '' }}</div>
       <div class="pbar" style="margin-bottom:8px">
         <div class="pbar-fill" style="width:{{ c.pct }}%;background:{{ event.color }}"></div>
       </div>
