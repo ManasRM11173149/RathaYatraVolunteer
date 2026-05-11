@@ -167,7 +167,7 @@ EVENTS = [
             {"id": "event_setup", "name": "Event - Setup & Supplies", "date": "July 17, 2026",
              "tasks": [
                  {"id": "t11", "name": "Prasad Serving Logistics", "slots": 2},
-                 {"id": "t12", "name": "Water/Buttermilk Serving", "slots": 10},
+                 {"id": "t12", "name": "Water/Buttermilk Serving (1 Adult + 🧒 9 Kids)", "slots": 10},
                  {"id": "t14", "name": "Ratha Assemble & Decoration", "slots": 8},
              ]},
             {"id": "pre_event_ritual", "name": "Pre-Event Ritual & Ceremony", "date": "July 17, 2026",
@@ -693,8 +693,24 @@ def signup_form(event_id, cat_id, task_id):
                                    event=event, category=cat, task=task,
                                    form_data=data, contact=CONTACT_INFO)
         data["initials"] = make_initials(data["first_name"], data["last_name"])
-        # Save and confirm
+        # Duplicate check — same task, same person (case-insensitive), not withdrawn
+        norm = lambda s: (s or "").strip().lower()
         rows = load_signups()
+        already = any(
+            r["event_id"] == event_id
+            and r["category_id"] == cat_id
+            and r["task_id"] == task_id
+            and norm(r["first_name"]) == norm(data["first_name"])
+            and norm(r["last_name"]) == norm(data["last_name"])
+            and norm(r["email"]) == norm(data["email"])
+            and r.get("status") != "withdrawn"
+            for r in rows
+        )
+        if already:
+            flash(f"You're already signed up for {task['name']}.", "error")
+            return render_template("signup_form.html", active="signup",
+                                   event=event, category=cat, task=task,
+                                   form_data=data, contact=CONTACT_INFO)
         rows.append(data)
         save_signups(rows)
         ok, msg = send_confirmation(data, event, cat, task)
