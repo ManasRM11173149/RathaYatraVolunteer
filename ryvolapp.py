@@ -91,7 +91,7 @@ EVENTS = [
         "categories": [
             {"id": "setup_supplies", "name": "Setup & Supplies", "date": "July 4, 2026",
              "tasks": [
-                 {"id": "t1", "name": "Snana Mandap Arrangement", "slots": 5},
+                 {"id": "t1", "name": "Snana Mandap Arrangement", "slots": 8},
                  {"id": "t2", "name": "Seclusion Chamber Setup", "slots": 5},
                  {"id": "t3", "name": "Seclusion Chamber Notice", "slots": 1},
                  {"id": "t4", "name": "Grocery Purchase & Delivery", "slots": 2},
@@ -154,11 +154,11 @@ EVENTS = [
         "time": "05:00 PM",
         "color": "#D4537E", "light": "#FBEAF0", "dark": "#72243E",
         "categories": [
-            {"id": "pre_event_setup", "name": "Pre-Event - Setup & Supplies", "date": "July 7 Onwards",
+            {"id": "pre_event_setup", "name": "Pre-Event - Setup & Supplies", "date": "July 10 Onwards",
              "tasks": [
                  {"id": "t1", "name": "Gundicha Mandap Arrangement", "slots": 3},
                  {"id": "t2", "name": "Tulasi Mala", "slots": 2},
-                 {"id": "t3", "name": "Coconut Purchase (40)", "slots": 2},
+                 {"id": "t3", "name": "Coconut Purchase", "slots": 2},
                  {"id": "t4", "name": "Vegetable Receive & Drop @ AHT", "slots": 6},
                  {"id": "t5", "name": "Grocery Purchase & Delivery", "slots": 4},
                  {"id": "t6", "name": "Water Delivery", "slots": 1},
@@ -182,6 +182,7 @@ EVENTS = [
                  {"id": "t18", "name": "Pahandi Volunteer (Anasara → Ratnabedi)", "slots": 13},
                  {"id": "t19", "name": "Kala-archana Arrangement", "slots": 1},
                  {"id": "t20", "name": "Ghanta Arrangement", "slots": 1},
+                 {"id": "t21_a", "name": "Patitapabana Bana preparation", "slots": 1},
              ]},
             {"id": "event_ritual", "name": "Event Ritual & Ceremony", "date": "July 18, 2026",
              "tasks": [
@@ -279,16 +280,21 @@ def load_signups():
     return g._signups_cache
 
 def save_signups(rows):
-    """Persist the full signups list. Updates request cache."""
-    g._signups_cache = rows  # Update cache
-    
+    """Persist the full signups list. Diff-deletes removed rows so admin_delete works."""
+    prior = g._signups_cache if "_signups_cache" in g else _load_signups_fresh()
+    prior_ids = {r["id"] for r in prior}
+    current_ids = {r["id"] for r in rows}
+    to_delete = list(prior_ids - current_ids)
+
+    g._signups_cache = rows  # update cache
+
     sb = _sb()
     if sb:
         try:
+            if to_delete:
+                sb.table("signups").delete().in_("id", to_delete).execute()
             if rows:
                 sb.table("signups").upsert(rows).execute()
-            else:
-                sb.table("signups").delete().neq("id", "").execute()
             return
         except Exception as e:
             print(f"[supabase] save_signups failed, using JSON: {e}")
