@@ -30,7 +30,7 @@
 {% block content %}
 
 <div class="crumb">
-  <a href="{{ url_for('signup_events') }}">🙋 Events</a>
+  <a href="{{ url_for('signup_events') }}">🚩 Events</a>
   <span class="crumb-sep">/</span>
   <span class="crumb-current">{{ event.name }}</span>
 </div>
@@ -50,12 +50,14 @@
 
 <div class="grid-3">
   {% for c in categories %}
+    {% set cat_color = c.color or event.color %}
+    {% set cat_dark = c.dark or event.dark %}
     <a href="{{ url_for('signup_tasks', event_id=event.id, cat_id=c.id) }}"
-       class="cat-card" style="border-left-color:{{ event.color }}">
-      <div class="cat-name" style="color:{{ event.dark }}">{{ c.name }}</div>
-      <div class="cat-meta">{% if c.date %}<span style="color:{{ event.dark }};font-weight:600">📅 {{ c.date }}</span> · {% endif %}{{ c.tasks|length }} task{{ 's' if c.tasks|length != 1 else '' }}</div>
+       class="cat-card" style="border-left-color:{{ cat_color }}; border-left-width:6px">
+      <div class="cat-name" style="color:{{ cat_dark }}">{{ c.name }}</div>
+      <div class="cat-meta">{% if c.date %}<span style="color:{{ cat_dark }};font-weight:600">📅 {{ c.date }}</span> · {% endif %}{{ c.tasks|length }} task{{ 's' if c.tasks|length != 1 else '' }}</div>
       <div class="pbar" style="margin-bottom:8px">
-        <div class="pbar-fill" style="width:{{ c.pct }}%;background:{{ event.color }}"></div>
+        <div class="pbar-fill" style="width:{{ c.pct }}%;background:{{ cat_color }}"></div>
       </div>
       <div class="cat-foot">
         <span>{{ c.filled }} / {{ c.total }} slots</span>
