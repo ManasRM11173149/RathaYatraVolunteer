@@ -155,6 +155,7 @@ EVENTS = [
         "color": "#D4537E", "light": "#FBEAF0", "dark": "#72243E",
         "categories": [
             {"id": "pre_event_setup", "name": "Pre-Event - Setup & Supplies", "date": "July 10 Onwards",
+             "color": "#BA7517", "dark": "#633806",
              "tasks": [
                  {"id": "t1", "name": "Gundicha Mandap Arrangement", "slots": 3},
                  {"id": "t2", "name": "Tulasi Mala", "slots": 2},
@@ -165,12 +166,16 @@ EVENTS = [
                  {"id": "t9", "name": "Storage Coordinator", "slots": 2},
              ]},
             {"id": "event_setup", "name": "Event - Setup & Supplies", "date": "July 17, 2026",
+             "color": "#D4537E", "dark": "#72243E",
              "tasks": [
                  {"id": "t11", "name": "Prasad Serving Logistics", "slots": 2},
                  {"id": "t12", "name": "Water/Buttermilk Serving (1 Adult + 🧒 9 Kids)", "slots": 10},
                  {"id": "t14", "name": "Ratha Assemble & Decoration", "slots": 8},
+                 {"id": "t36", "name": "Parking Guidance", "slots": 4},
+                 {"id": "t37", "name": "Trash Maintenance", "slots": 2},
              ]},
             {"id": "pre_event_ritual", "name": "Pre-Event Ritual & Ceremony", "date": "July 17, 2026",
+             "color": "#BA7517", "dark": "#633806",
              "tasks": [
                  {"id": "t15", "name": "Flower Arrangement", "slots": 1},
                  {"id": "t16", "name": "Puja Samagri Purchase", "slots": 1},
@@ -181,6 +186,7 @@ EVENTS = [
                  {"id": "t21_a", "name": "Patitapabana Bana preparation", "slots": 1},
              ]},
             {"id": "event_ritual", "name": "Event Ritual & Ceremony", "date": "July 18, 2026",
+             "color": "#D4537E", "dark": "#72243E",
              "tasks": [
                  {"id": "t21", "name": "Havan Arrangement", "slots": 1},
                  {"id": "t22", "name": "Puja Samagri Purchase", "slots": 1},
@@ -191,11 +197,13 @@ EVENTS = [
                  {"id": "t30", "name": "Special Bhoga", "slots": 3},
              ]},
             {"id": "pre_event_prasad", "name": "Pre-Event Prasad Prep", "date": "July 17, 2026",
+             "color": "#BA7517", "dark": "#633806",
              "tasks": [
                  {"id": "t31", "name": "Prasad Prep at AHT Kitchen", "slots": 15},
                  {"id": "t32", "name": "AHT Coordination", "slots": 2},
              ]},
             {"id": "event_prasad", "name": "Event Prasad Prep", "date": "July 18, 2026",
+             "color": "#D4537E", "dark": "#72243E",
              "tasks": [
                  {"id": "t33", "name": "Prasad Prep at AHT Kitchen", "slots": 12},
                  {"id": "t34", "name": "Prasad Serving", "slots": 15},
