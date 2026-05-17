@@ -454,6 +454,15 @@ def task_slots(event_id, cat_id, task_id):
         slots.append({"status": "open", "initials": "+", "signup_id": None, "name": "Open slot"})
     return slots
 
+def _display_pct(filled, total):
+    """Percent display that never collapses a real signup to 0%."""
+    if total <= 0:
+        return 0
+    raw = 100 * filled / total
+    if filled > 0:
+        return max(1, int(round(raw)))
+    return 0
+
 def task_stats(event_id, cat_id, task_id):
     slots = task_slots(event_id, cat_id, task_id)
     filled = sum(1 for s in slots if s["status"] == "filled")
@@ -466,7 +475,7 @@ def task_stats(event_id, cat_id, task_id):
         "pending": pending,
         "open": open_count,
         "total": total,
-        "pct": int(100 * (filled + pending) / max(1, total)),
+        "pct": _display_pct(filled + pending, total),
     }
 
 def event_stats(event_id):
@@ -482,7 +491,7 @@ def event_stats(event_id):
             open_total += st["open"]
             task_count += 1
             slot_total += st["total"]
-    pct = int(100 * filled_total / max(1, slot_total))
+    pct = _display_pct(filled_total, slot_total)
     # Urgency label
     if pct >= 80:
         urgency = "almost_full"
@@ -643,7 +652,7 @@ def signup_categories(event_id):
             st = task_stats(event_id, cat["id"], task["id"])
             total += st["total"]
             filled += st["filled"] + st["pending"]
-        pct = int(100 * filled / max(1, total))
+        pct = _display_pct(filled, total)
         cats_with_stats.append({**cat, "total": total, "filled": filled, "pct": pct})
     event_with_stats = {**event, "stats": event_stats(event_id)}
     return render_template("signup_step2.html", active="signup",
