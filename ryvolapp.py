@@ -214,22 +214,21 @@ EVENTS = [
         "categories": [
             {"id": "setup_supplies", "name": "Setup & Supplies", "date": "July 25, 2026",
              "tasks": [
-                 {"id": "t1", "name": "Snana Mandap Arrangement", "slots": 8},
-                 {"id": "t2", "name": "Seclusion Chamber Setup", "slots": 5},
-                 {"id": "t3", "name": "Seclusion Chamber Notice", "slots": 1},
+                 {"id": "t1", "name": "Ratha & Dome Dismantle - Back to Storage", "slots": 10},
                  {"id": "t4", "name": "Grocery Purchase & Delivery", "slots": 2},
                  {"id": "t5", "name": "Vegetables Purchase & Delivery", "slots": 2},
                  {"id": "t6", "name": "Water Delivery", "slots": 2},
                  {"id": "t7", "name": "Water Station", "slots": 2},
-                 {"id": "t8", "name": "Snana Mandap Dismantle", "slots": 8},
              ]},
             {"id": "ritual_ceremony", "name": "Ritual & Ceremony", "date": "July 26, 2026",
              "tasks": [
                  {"id": "t9", "name": "Flower Arrangement", "slots": 1},
                  {"id": "t10", "name": "Puja Samagri Purchase", "slots": 1},
-                 {"id": "t11", "name": "Vastra Arrangement & Bed Setup", "slots": 1},
+                 {"id": "t11", "name": "Suna Vesa Vastra Arrangement", "slots": 1},
                  {"id": "t12", "name": "Pahandi Volunteer", "slots": 13},
-                 {"id": "t13", "name": "Coconut and Mango Leaves Purchase", "slots": 2},
+                 {"id": "t13", "name": "Coconut Purchase", "slots": 2},
+                 {"id": "t16", "name": "Rasagola Preparation", "slots": 2},
+                 {"id": "t17", "name": "Special Bhoga (Gundicha Temple)", "slots": 2},
              ]},
             {"id": "prasad_prep", "name": "Prasad Prep & Serving", "date": "July 26, 2026",
              "tasks": [
