@@ -157,7 +157,7 @@ EVENTS = [
             {"id": "pre_event_setup", "name": "Pre-Event - Setup & Supplies", "date": "July 10 Onwards",
              "color": "#BA7517", "dark": "#633806",
              "tasks": [
-                 {"id": "t1", "name": "Gundicha Mandap Arrangement", "slots": 3},
+                 {"id": "t1", "name": "Adapa Mandapa Set up and Decoration", "slots": 3},
                  {"id": "t2", "name": "Tulasi Mala", "slots": 2},
                  {"id": "t3", "name": "Coconut Purchase", "slots": 2},
                  {"id": "t4", "name": "Vegetable Receive & Drop @ AHT", "slots": 6},
