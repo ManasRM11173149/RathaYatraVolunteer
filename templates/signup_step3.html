@@ -47,6 +47,22 @@
 .task-stats-pct.mid { color: var(--orange); }
 .task-stats-pct.high { color: var(--green); }
 
+.slot.coordinator {
+  position: relative;
+  box-shadow: 0 0 0 2px #E0B400;
+}
+.slot.coordinator::after {
+  content: "⭐";
+  position: absolute;
+  top: -7px;
+  right: -7px;
+  font-size: 11px;
+  line-height: 1;
+  background: #fff;
+  border-radius: 50%;
+  padding: 1px;
+}
+
 .event-banner {
   display: flex; align-items: center; gap: 10px;
   padding: 12px 14px;
@@ -161,6 +177,7 @@
   <span><span class="legend-dot" style="background:var(--green-light)"></span>Filled</span>
   <span><span class="legend-dot" style="background:#fff;border:1.5px dashed var(--border)"></span>Open — click to register</span>
   <span><span class="legend-dot" style="background:var(--red-light)"></span>Withdrawn</span>
+  <span>⭐ Coordinator (DRI)</span>
 </div>
 
 <div class="card">
@@ -201,7 +218,8 @@
         {% else %}
           {% for slot in t.slots %}
             {% if slot.status == 'filled' %}
-              <span class="slot slot-filled" title="{{ slot.name }}">{{ slot.initials }}</span>
+              <span class="slot slot-filled{% if slot.is_coordinator %} coordinator{% endif %}"
+                    title="{{ slot.name }}{% if slot.is_coordinator %} — Coordinator (DRI){% endif %}">{{ slot.initials }}</span>
             {% elif slot.status == 'withdrawn' %}
               <span class="slot slot-withdrawn" title="{{ slot.name }} (withdrawn)">{{ slot.initials }}</span>
             {% else %}

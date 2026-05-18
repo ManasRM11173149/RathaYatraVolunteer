@@ -184,6 +184,9 @@
                     {{ s.initials }}
                   </span>
                   <strong>{{ s.first_name }} {{ s.last_name }}</strong>
+                  {% if s.is_coordinator %}
+                    <span title="Coordinator (DRI)" style="font-size:14px">⭐</span>
+                  {% endif %}
                 </div>
               </td>
               <td>
@@ -213,6 +216,15 @@
               </td>
               <td>
                 <div style="display:flex;gap:4px;flex-wrap:wrap">
+                  {% if s.status != 'withdrawn' %}
+                    <form method="POST" action="{{ url_for('admin_toggle_coordinator', sid=s.id) }}" style="display:inline">
+                      <button type="submit" class="btn btn-secondary"
+                              style="padding:3px 7px;font-size:9.5px;{% if s.is_coordinator %}background:#FFF4CC;border-color:#E0B400;color:#7A5A00{% endif %}"
+                              title="{% if s.is_coordinator %}Remove coordinator{% else %}Assign as coordinator (DRI){% endif %}">
+                        {% if s.is_coordinator %}⭐ Coordinator{% else %}☆ Set DRI{% endif %}
+                      </button>
+                    </form>
+                  {% endif %}
                   {% for new_status in ['filled','pending','withdrawn'] %}
                     {% if s.status != new_status %}
                       <form method="POST" action="{{ url_for('admin_change_status', sid=s.id, new_status=new_status) }}" style="display:inline">
