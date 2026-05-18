@@ -982,10 +982,13 @@ def qr_page():
     return render_template("qrcode.html", active="signup",
                            portal_url=portal_url, contact=CONTACT_INFO)
 
+QR_CAPTION = "Austin RY Volunteer Signup"
+
 @app.route("/qr.png")
 def qr_image():
-    """Generate a PNG QR code pointing to the portal (or ?url= override)."""
+    """Generate a PNG QR code with caption pointing to the portal (or ?url= override)."""
     import qrcode
+    from PIL import Image, ImageDraw, ImageFont
     target_url = request.args.get("url") or (
         request.url_root.rstrip("/") + url_for("signup_events")
     )
@@ -997,9 +1000,34 @@ def qr_image():
     )
     qr.add_data(target_url)
     qr.make(fit=True)
-    img = qr.make_image(fill_color="#1e3a5f", back_color="white")
+    qr_img = qr.make_image(fill_color="#1e3a5f", back_color="white").convert("RGB")
+
+    caption = QR_CAPTION
+    qr_w, qr_h = qr_img.size
+    font = None
+    for candidate in (
+        "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf",
+        "/Library/Fonts/Arial Bold.ttf",
+        "/System/Library/Fonts/Supplemental/Arial Bold.ttf",
+    ):
+        try:
+            font = ImageFont.truetype(candidate, size=max(20, qr_w // 16))
+            break
+        except (OSError, IOError):
+            continue
+    if font is None:
+        font = ImageFont.load_default()
+
+    tmp = Image.new("RGB", (10, 10))
+    tw, th = ImageDraw.Draw(tmp).textbbox((0, 0), caption, font=font)[2:]
+    pad = max(12, qr_w // 32)
+    out = Image.new("RGB", (qr_w, qr_h + th + pad * 2), "white")
+    draw = ImageDraw.Draw(out)
+    draw.text(((qr_w - tw) // 2, pad), caption, fill="#1e3a5f", font=font)
+    out.paste(qr_img, (0, th + pad * 2))
+
     buf = io.BytesIO()
-    img.save(buf, format="PNG")
+    out.save(buf, format="PNG")
     return Response(buf.getvalue(), mimetype="image/png",
                     headers={"Cache-Control": "public, max-age=300"})
 
