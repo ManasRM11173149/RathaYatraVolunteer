@@ -975,6 +975,34 @@ def admin_toggle_pahandi(event_id, task_id, task_name):
         "enabled": flags["tasks"][task_key]
     })
 
+@app.route("/qr")
+def qr_page():
+    """Display a QR code that links to the volunteer portal."""
+    portal_url = request.url_root.rstrip("/") + url_for("signup_events")
+    return render_template("qrcode.html", active="signup",
+                           portal_url=portal_url, contact=CONTACT_INFO)
+
+@app.route("/qr.png")
+def qr_image():
+    """Generate a PNG QR code pointing to the portal (or ?url= override)."""
+    import qrcode
+    target_url = request.args.get("url") or (
+        request.url_root.rstrip("/") + url_for("signup_events")
+    )
+    qr = qrcode.QRCode(
+        version=None,
+        error_correction=qrcode.constants.ERROR_CORRECT_M,
+        box_size=10,
+        border=2,
+    )
+    qr.add_data(target_url)
+    qr.make(fit=True)
+    img = qr.make_image(fill_color="#1e3a5f", back_color="white")
+    buf = io.BytesIO()
+    img.save(buf, format="PNG")
+    return Response(buf.getvalue(), mimetype="image/png",
+                    headers={"Cache-Control": "public, max-age=300"})
+
 @app.route("/api/stats")
 def api_stats():
     return jsonify({
