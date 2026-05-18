@@ -18,8 +18,14 @@ create table if not exists public.signups (
     email           text,
     phone           text,
     status          text,
-    timestamp       text
+    timestamp       text,
+    is_coordinator  boolean not null default false
 );
+
+-- For existing deployments created before the coordinator (DRI) feature,
+-- add the column in-place. Safe to re-run.
+alter table public.signups
+    add column if not exists is_coordinator boolean not null default false;
 
 create index if not exists signups_event_idx on public.signups (event_id, category_id, task_id);
 create index if not exists signups_status_idx on public.signups (status);
