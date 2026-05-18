@@ -739,8 +739,8 @@ def signup_form(event_id, cat_id, task_id):
                                    form_data=data, contact=CONTACT_INFO)
         rows.append(data)
         save_signups(rows)
-        ok, msg = send_confirmation(data, event, cat, task)
-        flash(f"✓ Signed up for {task['name']}! {msg}", "success")
+        ok, _msg = send_confirmation(data, event, cat, task)
+        flash(f"✓ Signed up for {task['name']}!", "success")
         return redirect(url_for("signup_success", sid=data["id"]))
 
     return render_template("signup_form.html", active="signup",
