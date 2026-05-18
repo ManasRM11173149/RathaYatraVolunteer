@@ -3,5 +3,6 @@ gunicorn
 supabase
 resend
 python-dotenv
+qrcode[pil]
 # Optional — only if enabling real SMS via Twilio:
 # twilio>=8.0.0
