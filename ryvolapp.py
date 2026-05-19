@@ -182,7 +182,6 @@ EVENTS = [
                  {"id": "t15", "name": "Flower Arrangement", "slots": 1},
                  {"id": "t16", "name": "Puja Samagri Purchase", "slots": 1},
                  {"id": "t17", "name": "Vastra Arrangement", "slots": 1},
-                 {"id": "t18", "name": "Pahandi Volunteer (Anasara → Ratnabedi)", "slots": 13},
                  {"id": "t19", "name": "Kala-archana Arrangement", "slots": 1},
                  {"id": "t20", "name": "Ghanta Arrangement", "slots": 1},
                  {"id": "t21_a", "name": "Patitapabana Bana preparation", "slots": 1},
