@@ -448,6 +448,7 @@ def task_slots(event_id, cat_id, task_id):
             "initials": s["initials"],
             "signup_id": s["id"],
             "name": f"{s['first_name']} {s['last_name']}",
+            "is_coordinator": bool(s.get("is_coordinator", False)),
         })
     # Pad with open slots up to task's capacity
     while len(slots) < task["slots"]:
@@ -864,6 +865,31 @@ def admin_change_status(sid, new_status):
             break
     save_signups(rows)
     flash("Status updated.", "success")
+    return redirect(url_for("admin_dashboard"))
+
+@app.route("/admin/coordinator/<sid>", methods=["POST"])
+@admin_required
+def admin_toggle_coordinator(sid):
+    """Assign or unassign a volunteer as coordinator (DRI) for their task.
+    Only one coordinator allowed per (event, category, task)."""
+    rows = load_signups()
+    target = next((r for r in rows if r["id"] == sid), None)
+    if not target:
+        flash("Signup not found.", "error")
+        return redirect(url_for("admin_dashboard"))
+
+    currently_coord = bool(target.get("is_coordinator", False))
+    if currently_coord:
+        target["is_coordinator"] = False
+        flash(f"⭐ removed — {target['first_name']} {target['last_name']} is no longer coordinator.", "success")
+    else:
+        for r in rows:
+            if (r["event_id"] == target["event_id"]
+                    and r["category_id"] == target["category_id"]
+                    and r["task_id"] == target["task_id"]):
+                r["is_coordinator"] = (r["id"] == sid)
+        flash(f"⭐ {target['first_name']} {target['last_name']} assigned as coordinator for {target['task_name']}.", "success")
+    save_signups(rows)
     return redirect(url_for("admin_dashboard"))
 
 @app.route("/admin/delete/<sid>", methods=["POST"])
