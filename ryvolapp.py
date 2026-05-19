@@ -105,7 +105,7 @@ EVENTS = [
                  {"id": "t9", "name": "Flower Arrangement", "slots": 1},
                  {"id": "t10", "name": "Puja Samagri Purchase", "slots": 1},
                  {"id": "t11", "name": "Vastra Arrangement & Bed Setup", "slots": 1},
-                 {"id": "t12", "name": "Pahandi Volunteer", "slots": 13},
+                 {"id": "t12", "name": "Pahandi Volunteer (⭐ 1 + 🧒 1 + 👨 8 + 👩 4)", "slots": 14},
                  {"id": "t13", "name": "Coconut and Mango Leaves Purchase", "slots": 2},
              ]},
             {"id": "prasad_prep", "name": "Prasad Prep & Serving", "date": "July 5, 2026",
