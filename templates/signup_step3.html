@@ -47,6 +47,24 @@
 .task-stats-pct.mid { color: var(--orange); }
 .task-stats-pct.high { color: var(--green); }
 
+.slot-open-iconed {
+  position: relative;
+  overflow: visible;
+  margin-top: 8px;
+}
+.slot-open-iconed .slot-open-icon {
+  position: absolute;
+  top: -9px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 12px;
+  line-height: 1;
+  background: #fff;
+  padding: 0 2px;
+  border-radius: 4px;
+  pointer-events: none;
+}
+
 .slot.coordinator {
   position: relative;
   box-shadow: 0 0 0 2px #E0B400;
@@ -223,9 +241,12 @@
             {% elif slot.status == 'withdrawn' %}
               <span class="slot slot-withdrawn" title="{{ slot.name }} (withdrawn)">{{ slot.initials }}</span>
             {% else %}
-              <a class="slot slot-open"
+              <a class="slot slot-open{% if slot.icon %} slot-open-iconed{% endif %}"
                  href="{{ url_for('signup_form', event_id=event.id, cat_id=category.id, task_id=t.id) }}"
-                 title="Sign up for this slot">+</a>
+                 title="Sign up for this slot">
+                {% if slot.icon %}<span class="slot-open-icon">{{ slot.icon }}</span>{% endif %}
+                +
+              </a>
             {% endif %}
           {% endfor %}
         {% endif %}

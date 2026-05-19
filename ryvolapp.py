@@ -105,7 +105,8 @@ EVENTS = [
                  {"id": "t9", "name": "Flower Arrangement", "slots": 1},
                  {"id": "t10", "name": "Puja Samagri Purchase", "slots": 1},
                  {"id": "t11", "name": "Vastra Arrangement & Bed Setup", "slots": 1},
-                 {"id": "t12", "name": "Pahandi Volunteer (⭐ 1 + 🧒 1 + 👨 8 + 👩 4)", "slots": 14},
+                 {"id": "t12", "name": "Pahandi Volunteer (⭐ 1 + 🧒 1 + 👨 8 + 👩 4)", "slots": 14,
+                  "slot_icons": ["⭐", "🧒", "👨", "👨", "👨", "👨", "👨", "👨", "👨", "👨", "👩", "👩", "👩", "👩"]},
                  {"id": "t13", "name": "Coconut and Mango Leaves Purchase", "slots": 2},
              ]},
             {"id": "prasad_prep", "name": "Prasad Prep & Serving", "date": "July 5, 2026",
@@ -453,6 +454,10 @@ def task_slots(event_id, cat_id, task_id):
     # Pad with open slots up to task's capacity
     while len(slots) < task["slots"]:
         slots.append({"status": "open", "initials": "+", "signup_id": None, "name": "Open slot"})
+    # Attach per-slot role icons if defined on the task
+    slot_icons = task.get("slot_icons") or []
+    for i, slot in enumerate(slots):
+        slot["icon"] = slot_icons[i] if i < len(slot_icons) else None
     return slots
 
 def _display_pct(filled, total):
