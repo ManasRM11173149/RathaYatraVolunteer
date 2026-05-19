@@ -138,7 +138,8 @@ EVENTS = [
                  {"id": "t8", "name": "Flower Arrangement", "slots": 1},
                  {"id": "t9", "name": "Puja Samagri Purchase", "slots": 1},
                  {"id": "t10", "name": "Vastra Arrangement", "slots": 1},
-                 {"id": "t11", "name": "Pahandi Volunteer (Anasara → Ratnabedi)", "slots": 13},
+                 {"id": "t11", "name": "Pahandi Volunteer (Anasara → Ratnabedi) (⭐ 1 + 🧒 1 + 👨 8 + 👩 4)", "slots": 14,
+                  "slot_icons": ["⭐", "🧒", "👨", "👨", "👨", "👨", "👨", "👨", "👨", "👨", "👩", "👩", "👩", "👩"]},
              ]},
             {"id": "prasad_prep", "name": "Prasad Prep & Serving", "date": "July 17, 2026",
              "tasks": [
