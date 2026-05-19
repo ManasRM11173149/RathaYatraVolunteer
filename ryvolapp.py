@@ -474,17 +474,22 @@ def _display_pct(filled, total):
 
 def task_stats(event_id, cat_id, task_id):
     slots = task_slots(event_id, cat_id, task_id)
-    filled = sum(1 for s in slots if s["status"] == "filled")
     pending = sum(1 for s in slots if s["status"] == "pending")
+    withdrawn = sum(1 for s in slots if s["status"] == "withdrawn")
     open_count = sum(1 for s in slots if s["status"] == "open")
     total = len(slots)
+    # "filled" reflects every non-open slot so filled + open == total. Without
+    # this, pending/withdrawn signups occupy a slot tile but disappear from the
+    # summary count, which makes the math (filled + open) under-count total.
+    filled = total - open_count
     return {
         "slots": slots,
         "filled": filled,
         "pending": pending,
+        "withdrawn": withdrawn,
         "open": open_count,
         "total": total,
-        "pct": _display_pct(filled + pending, total),
+        "pct": _display_pct(filled, total),
     }
 
 def event_stats(event_id):
@@ -496,7 +501,7 @@ def event_stats(event_id):
     for cat in event["categories"]:
         for task in cat["tasks"]:
             st = task_stats(event_id, cat["id"], task["id"])
-            filled_total += st["filled"] + st["pending"]
+            filled_total += st["filled"]
             open_total += st["open"]
             task_count += 1
             slot_total += st["total"]
@@ -660,7 +665,7 @@ def signup_categories(event_id):
         for task in cat["tasks"]:
             st = task_stats(event_id, cat["id"], task["id"])
             total += st["total"]
-            filled += st["filled"] + st["pending"]
+            filled += st["filled"]
         pct = _display_pct(filled, total)
         cats_with_stats.append({**cat, "total": total, "filled": filled, "pct": pct})
     event_with_stats = {**event, "stats": event_stats(event_id)}
