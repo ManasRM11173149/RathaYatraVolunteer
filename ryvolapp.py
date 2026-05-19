@@ -236,7 +236,7 @@ EVENTS = [
                  {"id": "t9", "name": "Flower Arrangement", "slots": 1},
                  {"id": "t10", "name": "Puja Samagri Purchase", "slots": 1},
                  {"id": "t11", "name": "Suna Vesa Vastra Arrangement", "slots": 1},
-                 {"id": "t12", "name": "Pahandi Volunteer (⭐ 4 + 🧒 1 + 👨 12 + 👩 6)", "slots": 23,
+                 {"id": "t12", "name": "Pahandi (Gundicha → Ratnabedi) (⭐ 4 + 🧒 1 + 👨 12 + 👩 6)", "slots": 23,
                   "slot_icons": ["⭐", "⭐", "⭐", "⭐", "🧒", "👨", "👨", "👨", "👨", "👨", "👨", "👨", "👨", "👨", "👨", "👨", "👨", "👩", "👩", "👩", "👩", "👩", "👩"]},
                  {"id": "t13", "name": "Coconut Purchase", "slots": 2},
                  {"id": "t16", "name": "Rasagola Preparation", "slots": 2},
@@ -314,10 +314,10 @@ def save_signups(rows):
             print(f"[supabase] save_signups failed, using JSON: {e}")
     _save_signups_json(rows)
 
-def get_task_toggle_key(event_id, task_id, task_name):
+def get_task_toggle_key(event_id, task_id, task_name=None):
     """Generate a unique toggle key for a specific task (event_id + task_id).
-    For Pahandi tasks, this allows per-event/per-variant control."""
-    return f"{event_id}_{task_id}_{task_name.lower().replace(' ', '_').replace('(', '').replace(')', '').replace('→', '')}"
+    Independent of task_name so renames don't orphan an existing toggle state."""
+    return f"{event_id}_{task_id}"
 
 def is_pahandi_task(task_name):
     """Check if a task is a Pahandi variant task."""
