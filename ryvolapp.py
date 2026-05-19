@@ -712,6 +712,7 @@ def signup_form(event_id, cat_id, task_id):
             "phone": request.form.get("phone", "").strip(),
             "status": "filled",  # default to filled on signup
             "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+            "is_coordinator": False,
         }
         if not all([data["first_name"], data["last_name"],
                     data["email"]]):
