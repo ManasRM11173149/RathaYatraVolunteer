@@ -48,20 +48,21 @@
 .task-stats-pct.high { color: var(--green); }
 
 .slot-open-iconed {
-  flex-direction: column;
-  height: 36px;
-  width: 32px;
-  gap: 1px;
-  padding: 2px 0;
+  position: relative;
+  overflow: visible;
+  margin-top: 8px;
 }
 .slot-open-iconed .slot-open-icon {
+  position: absolute;
+  top: -9px;
+  left: 50%;
+  transform: translateX(-50%);
   font-size: 12px;
   line-height: 1;
-}
-.slot-open-iconed .slot-open-plus {
-  font-size: 12px;
-  line-height: 1;
-  font-weight: 700;
+  background: #fff;
+  padding: 0 2px;
+  border-radius: 4px;
+  pointer-events: none;
 }
 
 .slot.coordinator {
@@ -244,7 +245,7 @@
                  href="{{ url_for('signup_form', event_id=event.id, cat_id=category.id, task_id=t.id) }}"
                  title="Sign up for this slot">
                 {% if slot.icon %}<span class="slot-open-icon">{{ slot.icon }}</span>{% endif %}
-                <span class="slot-open-plus">+</span>
+                +
               </a>
             {% endif %}
           {% endfor %}
