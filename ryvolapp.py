@@ -860,10 +860,14 @@ def admin_dashboard():
     
     total_slots = sum(e["stats"]["total"] for e in events_with_stats)
     total_filled = sum(e["stats"]["filled"] for e in events_with_stats)
+    total_coordinators = sum(1 for s in signups
+                             if s.get("is_coordinator")
+                             and s.get("status") != "withdrawn")
     return render_template("admin_dashboard.html", active="admin",
                            events=events_with_stats, signups=signups,
                            total_slots=total_slots, total_filled=total_filled,
                            total_signups=len([s for s in signups if s["status"] != "withdrawn"]),
+                           total_coordinators=total_coordinators,
                            contact=CONTACT_INFO, flags=flags, pahandi_tasks=pahandi_tasks)
 
 @app.route("/admin/status/<sid>/<new_status>", methods=["POST"])
