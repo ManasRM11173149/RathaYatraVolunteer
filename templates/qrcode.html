@@ -19,6 +19,13 @@
   width: 260px; height: 260px;
   image-rendering: pixelated;
 }
+.qr-caption {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--root-bg);
+  text-align: center;
+  letter-spacing: 0.3px;
+}
 .qr-url {
   font-family: 'DM Mono', monospace;
   font-size: 12px;
@@ -56,8 +63,9 @@
 
 <div class="card">
   <div class="qr-wrap">
+    <div class="qr-caption">Austin RY Volunteer Signup</div>
     <div class="qr-frame">
-      <img src="{{ url_for('qr_image') }}" alt="QR code for {{ portal_url }}">
+      <img src="{{ url_for('qr_image') }}" alt="QR code for Austin RY Volunteer Signup — {{ portal_url }}">
     </div>
     <div class="qr-url">{{ portal_url }}</div>
     <div class="qr-actions">
