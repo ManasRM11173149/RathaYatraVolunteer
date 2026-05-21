@@ -197,6 +197,7 @@ EVENTS = [
                  {"id": "t28", "name": "Paana", "slots": 1},
                  {"id": "t29", "name": "Pahandi (Ratha → Gundicha Temple) (⭐ 4 + 🧒 1 + 👨 12 + 👩 6)", "slots": 23,
                   "slot_icons": ["⭐", "⭐", "⭐", "⭐", "🧒", "👨", "👨", "👨", "👨", "👨", "👨", "👨", "👨", "👨", "👨", "👨", "👨", "👩", "👩", "👩", "👩", "👩", "👩"]},
+                 {"id": "t38", "name": "Ghantua (Pahandi & Procession)", "slots": 11},
                  {"id": "t30", "name": "Special Bhoga", "slots": 3},
              ]},
             {"id": "pre_event_prasad", "name": "Pre-Event Prasad Prep", "date": "July 17, 2026",
