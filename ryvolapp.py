@@ -41,7 +41,7 @@ FLAGS_FILE = os.path.join(DATA_DIR, "flags.json")
 os.makedirs(DATA_DIR, exist_ok=True)
 
 ADMIN_USERNAME = os.environ.get("ADMIN_USERNAME", "admin")
-ADMIN_PASSWORD = os.environ.get("ADMIN_PASSWORD", "RYevent2026")
+ADMIN_PASSWORD = os.environ.get("ADMIN_PASSWORD", "RYAustin@2026")
 
 # Supabase — falls back to local JSON files when not configured
 SUPABASE_URL = os.environ.get("SUPABASE_URL", "")
