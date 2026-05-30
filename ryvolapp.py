@@ -191,8 +191,8 @@ EVENTS = [
              "tasks": [
                  {"id": "t21", "name": "Havan Arrangement", "slots": 1},
                  {"id": "t22", "name": "Puja Samagri Purchase", "slots": 1},
-                 {"id": "t26", "name": "Pahandi (Ratnabedi → Ratha) (⭐ 4 + 🧒 1 + 👨 12 + 👩 6)", "slots": 23,
-                  "slot_icons": ["⭐", "⭐", "⭐", "⭐", "🧒", "👨", "👨", "👨", "👨", "👨", "👨", "👨", "👨", "👨", "👨", "👨", "👨", "👩", "👩", "👩", "👩", "👩", "👩"]},
+                 {"id": "t26", "name": "Pahandi (Ratnabedi → Ratha) (⭐ 3 + 🧒 2 + 👨 24 + 👩 12)", "slots": 41,
+                  "slot_icons": ["⭐", "⭐", "⭐", "🧒", "🧒", "👨", "👨", "👨", "👨", "👨", "👨", "👨", "👨", "👨", "👨", "👨", "👨", "👨", "👨", "👨", "👨", "👨", "👨", "👨", "👨", "👨", "👨", "👨", "👨", "👩", "👩", "👩", "👩", "👩", "👩", "👩", "👩", "👩", "👩", "👩", "👩"]},
                  {"id": "t27", "name": "Deepam Arati (Adapa Mandapa)", "slots": 1},
                  {"id": "t28", "name": "Paana", "slots": 1},
                  {"id": "t29", "name": "Pahandi (Ratha → Adapa Mandapa) (⭐ 4 + 🧒 1 + 👨 12 + 👩 6)", "slots": 23,
