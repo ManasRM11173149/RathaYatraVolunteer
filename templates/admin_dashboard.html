@@ -230,6 +230,11 @@
                     {% endif %}
                   {% endfor %}
                   {% if s.status != 'withdrawn' %}
+                    <form method="POST" action="{{ url_for('admin_notify_email', sid=s.id) }}" style="display:inline" title="Send notification email to this volunteer">
+                      <button type="submit" class="btn btn-secondary" style="padding:3px 7px;font-size:9.5px;background:#E8F4FD;border-color:#4A90E2;color:#2C5AA0">
+                        📧 Notify
+                      </button>
+                    </form>
                     <form method="POST" action="{{ url_for('admin_toggle_coordinator', sid=s.id) }}" style="display:inline">
                       <button type="submit" class="btn btn-secondary"
                               style="padding:3px 7px;font-size:9.5px;{% if s.is_coordinator %}background:#FFF4CC;border-color:#E0B400;color:#7A5A00;font-weight:700{% endif %}"

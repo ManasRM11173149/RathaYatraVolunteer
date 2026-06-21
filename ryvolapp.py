@@ -919,6 +919,44 @@ def admin_delete(sid):
     flash("Signup deleted.", "success")
     return redirect(url_for("admin_dashboard"))
 
+@app.route("/admin/notify-email/<sid>", methods=["POST"])
+@admin_required
+def admin_notify_email(sid):
+    """Send a notification email to an individual volunteer."""
+    signups = load_signups()
+    signup = next((s for s in signups if s["id"] == sid), None)
+    
+    if not signup:
+        return jsonify({"success": False, "message": "Signup not found"}), 404
+    
+    # Find event, category, task
+    event = next((e for e in EVENTS if e["id"] == signup.get("event_id")), None)
+    if not event:
+        return jsonify({"success": False, "message": "Event not found"}), 404
+    
+    category = None
+    task = None
+    for cat in event.get("categories", []):
+        for t in cat.get("tasks", []):
+            if t["id"] == signup.get("task_id"):
+                category = cat
+                task = t
+                break
+    
+    if not task:
+        return jsonify({"success": False, "message": "Task not found"}), 404
+    
+    # Send email
+    success, message = send_email_confirmation(signup, event, category, task)
+    
+    if success:
+        flash(f"✅ Email sent to {signup['email']}", "success")
+    else:
+        flash(f"❌ Email failed: {message}", "error")
+    
+    return redirect(url_for("admin_dashboard"))
+
+
 @app.route("/withdraw/<sid>", methods=["POST"])
 def withdraw_signup(sid):
     """Allow a volunteer to withdraw their own signup."""
