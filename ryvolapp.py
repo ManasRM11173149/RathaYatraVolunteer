@@ -199,6 +199,7 @@ EVENTS = [
                   "slot_icons": ["⭐", "⭐", "⭐", "⭐", "🧒", "👨", "👨", "👨", "👨", "👨", "👨", "👨", "👨", "👨", "👨", "👨", "👨", "👩", "👩", "👩", "👩", "👩", "👩"]},
                  {"id": "t38", "name": "Ghantua (Pahandi & Procession)", "slots": 15},
                  {"id": "t30", "name": "Special Bhoga (Adapa Mandap)", "slots": 4},
+                 {"id": "t39", "name": "Ratha & Dome Dismantle - Back to Storage", "slots": 10},
              ]},
             {"id": "pre_event_prasad", "name": "Pre-Event Prasad Prep", "date": "July 17, 2026",
              "color": "#BA7517", "dark": "#633806",
@@ -226,7 +227,6 @@ EVENTS = [
         "categories": [
             {"id": "setup_supplies", "name": "Setup & Supplies", "date": "July 25, 2026",
              "tasks": [
-                 {"id": "t1", "name": "Ratha & Dome Dismantle - Back to Storage", "slots": 10},
                  {"id": "t4", "name": "Grocery Purchase & Delivery", "slots": 2},
                  {"id": "t5", "name": "Vegetables Purchase & Delivery", "slots": 2},
                  {"id": "t6", "name": "Water Delivery", "slots": 2},
