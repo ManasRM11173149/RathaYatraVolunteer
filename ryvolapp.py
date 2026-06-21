@@ -105,7 +105,7 @@ EVENTS = [
                  {"id": "t9", "name": "Flower Arrangement", "slots": 1},
                  {"id": "t10", "name": "Puja Samagri Purchase", "slots": 1},
                  {"id": "t11", "name": "Vastra Arrangement & Bed Setup", "slots": 1},
-                 {"id": "t12", "name": "Pahandi Volunteer (🧒 1 Kid >=10years + 👨 8 Adult Male + 👩 4 Adult Female)", "slots": 14,
+                 {"id": "t12", "name": "Pahandi Volunteer (🧒 1 Kid >=10years + 👨 8 Adult Male + 👩 4 Adult Female)", "slots": 13,
                   "slot_icons": ["🧒", "👨", "👨", "👨", "👨", "👨", "👨", "👨", "👨", "👩", "👩", "👩", "👩"]},
                  {"id": "t13", "name": "Coconut and Mango Leaves Purchase", "slots": 2},
              ]},
