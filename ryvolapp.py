@@ -111,7 +111,7 @@ EVENTS = [
              ]},
             {"id": "prasad_prep", "name": "Prasad Prep & Serving", "date": "July 5, 2026",
              "tasks": [
-                 {"id": "t14", "name": "Prasad Prep at AHT Kitchen", "slots": 4},
+                 {"id": "t14", "name": "Prasad Prep at AHT Kitchen", "slots": 7},
                  {"id": "t15", "name": "Prasad Serving and Cleanup", "slots": 6},
              ]},
         ],
