@@ -593,6 +593,77 @@ The Ratha Yatra 2026 Committee
     print("=" * 60 + "\n")
     return True, "email logged to console"
 
+def send_reminder_email(signup, event, category, task):
+    """
+    Send a reminder email to a volunteer.
+    Same content as confirmation, but with "Reminder:" prefix in subject.
+    """
+    subject = f"Reminder: {task['name']} — {event['name']}"
+    body = f"""Jai Jagannath, {signup['first_name']}!
+
+Your volunteer slot is confirmed.
+
+YOUR SIGNUP
+-----------
+Event:      {event.get('name', '')}
+Date:       {event.get('date', '')} ({event.get('weekday', '')})
+Time:       {event.get('time', '')}
+Category:   {category.get('name', '')}
+Task:       {task.get('name', '')}
+Shift:      {task.get('time', '')}
+Initials:   {signup['initials']}
+
+VENUE
+-----
+{CONTACT_INFO.get('venue', '')}
+{CONTACT_INFO.get('address', '')}
+
+WhatsApp group:
+{CONTACT_INFO.get('whatsapp_link', '')}
+
+Jai Jagannath,
+The Ratha Yatra 2026 Committee
+"""
+    # Preferred: Resend
+    if RESEND_API_KEY:
+        try:
+            import resend
+            resend.api_key = RESEND_API_KEY
+            resend.Emails.send({
+                "from": FROM_EMAIL,
+                "to": [signup["email"]],
+                "subject": subject,
+                "text": body,
+            })
+            return True, "Email delivered (Resend)"
+        except Exception as e:
+            print(f"[resend] reminder send failed, falling back: {e}")
+
+    # Fallback: SMTP
+    if SMTP_USER and SMTP_PASS:
+        try:
+            msg = MIMEMultipart()
+            msg["From"] = FROM_EMAIL
+            msg["To"] = signup["email"]
+            msg["Subject"] = subject
+            msg.attach(MIMEText(body, "plain"))
+            with smtplib.SMTP(SMTP_SERVER, SMTP_PORT) as server:
+                server.starttls()
+                server.login(SMTP_USER, SMTP_PASS)
+                server.send_message(msg)
+            return True, "Email delivered (SMTP)"
+        except Exception as e:
+            return False, f"Email error: {e}"
+
+    # Last resort: log to console (dev mode)
+    print("\n" + "=" * 60)
+    print("REMINDER EMAIL (Demo — no email provider configured)")
+    print("=" * 60)
+    print(f"To: {signup['email']}\nSubject: {subject}\n{body}")
+    print("=" * 60 + "\n")
+    return True, "email logged to console"
+
+
 def send_sms_confirmation(signup, event, task):
     if not signup.get("phone"):
         return True, "no phone number provided (skipped)"
@@ -947,7 +1018,7 @@ def admin_notify_email(sid):
         return jsonify({"success": False, "message": "Task not found"}), 404
     
     # Send email
-    success, message = send_email_confirmation(signup, event, category, task)
+    success, message = send_reminder_email(signup, event, category, task)
     
     if success:
         flash(f"✅ Email sent to {signup['email']}", "success")
